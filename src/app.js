@@ -7,12 +7,11 @@ const fetchUrls = () => new Promise((resolve, reject) => {
       resolve(request.responseText)
     }
   }
-
   request.onerror = () => reject(request)
 
   request.send()
 })
 
-fetchUrls().then(function (data) {
+fetchUrls().then((data) => {
   console.log(data)
 })

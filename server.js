@@ -1,4 +1,5 @@
 const express = require('express')
+const path = require('path')
 const whois = require('whois-api')
 
 const app = express()
@@ -14,14 +15,15 @@ app.get('/', (request, response) => {
 app.listen(app.get('port'), () => {
   console.log('Node app is running on port', app.get('port'))
 })
-// const getUrls = filePath => new Promise((resolve, reject) => {
-//   whois.lookup('google.com', function (error, result) {
-//     console.log(result);
-//   });
-// })
+
+const getDomains = () => new Promise((resolve, reject) => {
+  whois.lookup('google.com', function (error, result) {
+    console.log(result);
+  });
+})
 
 app.get('/domains', (request, response) => {
-  console.log('whats u')
   var domains = require('./data/domains.json')
   response.json(domains)
+  // getDomains()
 })
