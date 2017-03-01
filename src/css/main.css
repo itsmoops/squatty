@@ -1,0 +1,24 @@
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+.container {
+  height: 100%;
+  display: flex;
+  display: -webkit-flex;
+  align-items:center;
+  -webkit-align-items: center;
+  justify-content: center;
+  -webkit-justify-content: center;
+  top: 0px;
+  bottom: 0px;
+}
+
+.content {
+  height: 200px;
+  display: block;
+  text-align: center;
+  font-family: "Times New Roman";
+  font-size: 100px;
+}
