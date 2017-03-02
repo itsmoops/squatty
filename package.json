@@ -1,12 +1,12 @@
 {
-  "name": "squatty-potty",
+  "name": "squatty",
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
   "scripts": {
     "start": "npm run dev",
     "build": "webpack --config webpack.config.js -p",
-    "dev": "node server.js & webpack --progress --colors --watch --devtool inline-source-map",
+    "dev": "devtool server.js & webpack --progress --colors --watch --devtool inline-source-map",
     "serve": "node server.js"
   },
   "author": "Eric Moore",
@@ -28,6 +28,9 @@
     "webpack-dev-server": "^1.14.1"
   },
   "dependencies": {
+    "domain-available": "0.0.1",
+    "namecheap": "0.0.1",
+    "url-exists": "^1.0.3",
     "whois-api": "^1.0.2"
   }
 }
