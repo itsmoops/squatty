@@ -7,7 +7,16 @@ const whois = require('whois-api')
 const jsonfile = require('jsonfile')
 const nodemailer = require('nodemailer');
 
+
+const tld = `com`
+
+const alphabet = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z']
+const vowels = ['a','e','i','o','u']
+
 const googleDomains = []
+const threeLetterCombos = []
+const fourLetterCombos = []
+const fiveLetterCombos = []
 
 const app = express()
 app.set('port', process.env.PORT || 8080)
@@ -24,7 +33,6 @@ app.listen(app.get('port'), () => {
 })
 
 const sanitizeDomains = (searchTerm) => {
-  let tld = `com`
   let sanitized = `${searchTerm.toLowerCase().replace(/ /g, "").replace(/\./g, "")}.${tld}`
   return sanitized
 }
@@ -44,9 +52,78 @@ const getTrendingGoogleSearchDomains = () => {
   })
 }
 
-const generateLetterCombinations = (num) => new Promise((resolve, reject) => {
-
-})
+const generateLetterCombinations = (num) => {
+  const filePath = `./data/${num}-letter-domains.json`
+  var domain = ``
+  var first = ``
+  var second = ``
+  var third = ``
+  var fourth = ``
+  var fifth = ``
+  if (num === 3) {
+    alphabet.forEach((firstLetter) => {
+      first = firstLetter
+      alphabet.forEach((secondLetter) => {
+        second = secondLetter
+        alphabet.forEach((thirdLetter) => {
+          third = thirdLetter
+          domain = `${first}${second}${third}.${tld}`
+          threeLetterCombos.push(domain)
+          if (first === 'z' && second === 'z' && third === 'z') {
+            jsonfile.writeFile(filePath, threeLetterCombos, { spaces: 2 }, (err) => {
+              if (err) console.error(err)
+            })
+          }
+        })
+      })
+    })
+  }
+  if (num === 4) {
+    alphabet.forEach((firstLetter) => {
+      first = firstLetter
+      alphabet.forEach((secondLetter) => {
+        second = secondLetter
+        alphabet.forEach((thirdLetter) => {
+          third = thirdLetter
+          alphabet.forEach((fourthLetter) => {
+            fourth = fourthLetter
+            domain = `${first}${second}${third}${fourth}.${tld}`
+            fourLetterCombos.push(domain)
+            if (first === 'z' && second === 'z' && third === 'z' && fourth === 'z') {
+              jsonfile.writeFile(filePath, fourLetterCombos, { spaces: 2 }, (err) => {
+                if (err) console.error(err)
+              })
+            }
+          })
+        })
+      })
+    })
+  }
+  if (num === 5) {
+    alphabet.forEach((firstLetter) => {
+      first = firstLetter
+      alphabet.forEach((secondLetter) => {
+        second = secondLetter
+        alphabet.forEach((thirdLetter) => {
+          third = thirdLetter
+          alphabet.forEach((fourthLetter) => {
+            fourth = fourthLetter
+            alphabet.forEach((fifthLetter) => {
+              fifth = fifthLetter
+              domain = `${first}${second}${third}${fourth}${fifth}.${tld}`
+              fiveLetterCombos.push(domain)
+              if (first === 'z' && second === 'z' && third === 'z' && fourth === 'z' && fifth === 'z') {
+                jsonfile.writeFile(filePath, fiveLetterCombos, { spaces: 2 }, (err) => {
+                  if (err) console.error(err)
+                })
+              }
+            })
+          })
+        })
+      })
+    })
+  }
+}
 
 const getDomains = filePath => new Promise((resolve, reject) => {
   // WhoAPI
@@ -56,7 +133,10 @@ const getDomains = filePath => new Promise((resolve, reject) => {
   new Promise((resolve, reject) => {
     domains.reverse().forEach((domain, idx) => {
       const domainURL = `http://api.whoapi.com/?apikey=${whoAPIKey}&r=taken&domain=${domain}`
+      // const domainURL = domain
       request(domainURL, (err, res, body) => {
+          // body = `{"status":"0","taken":0}`
+
           let domainInfo = {
             URL: domain
           }
@@ -99,8 +179,11 @@ const fileExists = filePath => new Promise((resolve, reject) => {
 })
 
 getTrendingGoogleSearchDomains()
+// generateLetterCombinations(3)
+// generateLetterCombinations(4)
+// generateLetterCombinations(5)
 
-app.get('/domains', (request, response) => {
+app.get('/google-trending-domains', (request, response) => {
   const filePath = './data/domains.json'
   // check if file exists
   fileExists(filePath).then(exists => {
@@ -131,6 +214,23 @@ app.get('/domains', (request, response) => {
   })
 })
 
+app.get('/three-letter-domains', (request, response) => {
+  const filePath = './data/3-letter-domains.json'
+  const domains = require(filePath)
+  response.json(domains)
+})
+
+app.get('/four-letter-domains', (request, response) => {
+  const filePath = './data/4-letter-domains.json'
+  const domains = require(filePath)
+  response.json(domains)
+})
+
+app.get('/five-letter-domains', (request, response) => {
+  const filePath = './data/5-letter-domains.json'
+  const domains = require(filePath)
+  response.json(domains)
+})
 
 
 // EMAIL SETTINGS //
@@ -141,7 +241,7 @@ let transporter = nodemailer.createTransport({
         user: 'squattydomains@gmail.com',
         pass: 'SquattyPotty87'
     }
-});
+})
 
 const sendEmail = () => {
   const domains = require(`./data/domains.json`)
