@@ -4,7 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start": "npm run dev",
+    "start": "npm run build && node server.js",
     "build": "webpack --config webpack.config.js -p",
     "dev": "devtool server.js & webpack --progress --colors --watch --devtool inline-source-map",
     "serve": "node server.js"
