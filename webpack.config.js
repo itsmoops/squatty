@@ -13,8 +13,6 @@ module.exports = {
       historyApiFallback: true,
       watchOptions: { aggregateTimeout: 300, poll: 1000 }
     },
-    debug: true,
-    devtool: 'source-map',
     module: {
         loaders: [
             {
