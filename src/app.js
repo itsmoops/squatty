@@ -20,9 +20,9 @@ fetchUrls().then((data) => {
       let domainInfo = ``
       let namecheapUrl = `https://www.namecheap.com/domains/registration/results.aspx?domain=`
       if (domain.available) {
-        domainInfo = `<a href="${namecheapUrl}${domain.URL}" target="_blank" class="col-xs-12 content available">${domain.URL}</a>`
+        domainInfo = `<div class="col-xs-12 content"><a href="${namecheapUrl}${domain.URL}" target="_blank" class="available">${domain.URL}</a></div>`
       } else {
-        domainInfo = `<a href="${namecheapUrl}${domain.URL}" target="_blank" class="col-xs-12 content unavailable">${domain.URL}</a>`
+        domainInfo = `<div class="col-xs-12 content"><a href="${namecheapUrl}${domain.URL}" target="_blank" class="unavailable">${domain.URL}</a></div>`
       }
       $('.container').append(domainInfo)
     }
