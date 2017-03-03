@@ -1,3 +1,5 @@
+const $ = require('jquery')
+
 const fetchUrls = () => new Promise((resolve, reject) => {
   const request = new XMLHttpRequest()
   request.open('GET', '/domains', true)
@@ -13,5 +15,16 @@ const fetchUrls = () => new Promise((resolve, reject) => {
 })
 
 fetchUrls().then((data) => {
-  console.log(data)
+  JSON.parse(data).forEach((domain, idx) => {
+    if (idx > 0) {
+      let domainInfo = ``
+      let namecheapUrl = `https://www.namecheap.com/domains/registration/results.aspx?domain=`
+      if (domain.available) {
+        domainInfo = `<a href="${namecheapUrl}${domain.URL}" target="_blank" class="col-xs-12 content available">${domain.URL}</a>`
+      } else {
+        domainInfo = `<a href="${namecheapUrl}${domain.URL}" target="_blank" class="col-xs-12 content unavailable">${domain.URL}</a>`
+      }
+      $('.container').append(domainInfo)
+    }
+  })
 })

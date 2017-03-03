@@ -33,8 +33,7 @@ const getTrendingGoogleSearchDomains = () => {
   request(googleTrendsURL1, (err, res, body) => {
     if (body) {
       let data = JSON.parse(body)
-      debugger
-      if (data[1]) {
+      if (data) {
         data[1].forEach((searchTerm) => {
           let sanitizedDomain = sanitizeDomains(searchTerm)
           googleDomains.push(sanitizedDomain)
@@ -113,7 +112,7 @@ app.get('/domains', (request, response) => {
       domains = require(filePath)
       /* we only want to generate new domains once per day
       * so we check against the "DATE_GENERATED" property */
-      if (today.isAfter(domains[0].DATE_GENERATED, 'minute')) {
+      if (today.isAfter(domains[0].DATE_GENERATED, 'hour')) {
         // if it's been more than a day, regenerate domains
         getDomains(filePath).then(domainInfo => {
           response.json(domainInfo)
