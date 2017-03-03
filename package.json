@@ -5,10 +5,9 @@
   "main": "app.js",
   "scripts": {
     "start": "npm run build && node server.js",
-    "build": "webpack -p",
+    "build": "webpack --config webpack.config.js -p",
     "dev": "devtool server.js & webpack --progress --colors --watch --devtool inline-source-map",
-    "serve": "node server.js",
-    "heroku-postbuild": "webpack -p --config ./webpack.config.js --progress"
+    "serve": "node server.js"
   },
   "author": "Eric Moore",
   "license": "ISC",
