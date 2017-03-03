@@ -28,9 +28,8 @@
     "webpack-dev-server": "^1.14.1"
   },
   "dependencies": {
-    "domain-available": "0.0.1",
-    "namecheap": "0.0.1",
-    "url-exists": "^1.0.3",
+    "moment": "^2.17.1",
+    "request": "^2.79.0",
     "whois-api": "^1.0.2"
   }
 }
