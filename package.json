@@ -27,6 +27,7 @@
     "json-loader": "^0.5.4",
     "jsonfile": "^2.4.0",
     "moment": "^2.17.1",
+    "node-schedule": "^1.2.0",
     "nodemailer": "^3.1.4",
     "request": "^2.79.0",
     "require": "^2.4.20",

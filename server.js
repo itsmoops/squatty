@@ -5,8 +5,8 @@ const request = require("request")
 const moment = require('moment')
 const whois = require('whois-api')
 const jsonfile = require('jsonfile')
-const nodemailer = require('nodemailer');
-
+const nodemailer = require('nodemailer')
+const schedule = require('node-schedule')
 
 const tld = `com`
 
@@ -184,7 +184,7 @@ getTrendingGoogleSearchDomains()
 // generateLetterCombinations(5)
 
 app.get('/google-trending-domains', (request, response) => {
-  const filePath = './data/domains.json'
+  const filePath = './data/google-trending-domains.json'
   // check if file exists
   fileExists(filePath).then(exists => {
     if (exists) {
@@ -195,19 +195,16 @@ app.get('/google-trending-domains', (request, response) => {
       if (today.isAfter(domains[0].DATE_GENERATED, 'hour')) {
         // if it's been more than a day, regenerate domains
         getDomains(filePath).then(domainInfo => {
-          sendEmail()
           response.json(domainInfo)
         })
       } else {
         // if it hasn't been a day, don't regenerate
-        sendEmail()
         response.json(domains)
       }
     } else {
       // if it doesn't exist, create a file
       getDomains(filePath).then(domainInfo => {
         // write json file
-        sendEmail()
         response.json(domainInfo)
       })
     }
@@ -244,20 +241,23 @@ let transporter = nodemailer.createTransport({
 })
 
 const sendEmail = () => {
-  const domains = require(`./data/domains.json`)
-  let linkContainerStyle = `width:100%;padding-left:5px;`
+  const domains = require(`./data/google-trending-domains.json`)
+  let linkContainerStyle = `width:100%;padding-left:15px;font-size:15px;`
   let availableStyle = `color:#55c16a;`
   let unavailableStyle = `color:#c94646;`
   let domainLinks = ``
   domains.forEach((domain, idx) => {
     if (idx > 0) {
+      if (idx === domains.length - 1) {
+        linkContainerStyle += `margin-bottom:20px;`
+      }
       if (domain.available) {
         domainLinks += `<div style="${linkContainerStyle}">
-                          <a style="${availableStyle}" href=https://www.namecheap.com/domains/registration/results.aspx?domain=${domain}>${domain.URL}</a>
+                          <a style="${availableStyle}" href=https://www.namecheap.com/domains/registration/results.aspx?domain=${domain.URL}>${domain.URL}</a>
                         </div>`
       } else {
         domainLinks += `<div style="${linkContainerStyle}">
-                          <a style="${unavailableStyle}" href=https://www.namecheap.com/domains/registration/results.aspx?domain=${domain}>${domain.URL}</a>
+                          <a style="${unavailableStyle}" href=https://www.namecheap.com/domains/registration/results.aspx?domain=${domain.URL}>${domain.URL}</a>
                         </div>`
       }
     }
@@ -280,7 +280,7 @@ const sendEmail = () => {
                   </html>`
   let mailOptions = {
       from: `"Squatty Domains 💩" <squattydomains@gmail.com>`, // sender address
-      to: `moore.ericc@gmail.com, karl.schwende@gmail.com`, // list of receivers, comma separate to add more
+      to: `moore.ericc@gmail.com`, // list of receivers, comma separate to add more
       subject: `Available Domains`, // Subject line
       html: mailBody // html body
   }
@@ -292,3 +292,23 @@ const sendEmail = () => {
       console.log('Message %s sent: %s', info.messageId, info.response);
   });
 }
+
+
+let rule1 = new schedule.RecurrenceRule()
+rule1.hour = 9
+schedule.scheduleJob(rule1, () => {
+  sendEmail()
+})
+
+let rule2 = new schedule.RecurrenceRule()
+rule2.hour = 12
+rule2.minute = 30
+schedule.scheduleJob(rule2, () => {
+  sendEmail()
+})
+
+let rule3 = new schedule.RecurrenceRule()
+rule3.hour = 19
+schedule.scheduleJob(rule3, () => {
+  sendEmail()
+})
