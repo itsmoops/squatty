@@ -194,8 +194,8 @@ app.get('/google-trending-domains', (request, response) => {
   fileExists(filePath).then(exists => {
     if (exists) {
       const today = moment()
-      domains = require(filePath)
       response.json(domainInfo)
+      domains = require(filePath)
       /* we only want to generate new domains once per day
       * so we check against the "DATE_GENERATED" property */
       if (today.isAfter(domains[0].DATE_GENERATED, 'hour')) {
