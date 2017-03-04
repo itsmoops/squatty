@@ -24,15 +24,17 @@ a {
 a:hover {
   cursor: pointer;
   text-decoration: none;
-  color: #bdc3be
+  color: #9ea39f;
 }
 
 a:visited {
   text-decoration: none;
+  color: #9ea39f;
 }
 
 a:focus {
   text-decoration: none;
+  color: #9ea39f;
 }
 
 .squatty-container {
