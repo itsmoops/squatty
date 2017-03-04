@@ -45,7 +45,10 @@ const getTrendingGoogleSearchDomains = () => {
       if (data) {
         data[1].forEach((searchTerm) => {
           let sanitizedDomain = sanitizeDomains(searchTerm)
-          googleDomains.push(sanitizedDomain)
+          googleDomains.push({
+            domain: sanitizedDomain,
+            searchTerm: searchTerm
+          })
         })
       }
     }
@@ -133,13 +136,14 @@ const getDomains = filePath => new Promise((resolve, reject) => {
   new Promise((resolve, reject) => {
     var counter = 0
     domains.reverse().forEach((domain, idx) => {
-      const domainURL = `http://api.whoapi.com/?apikey=${whoAPIKey}&r=taken&domain=${domain}`
+      const domainURL = `http://api.whoapi.com/?apikey=${whoAPIKey}&r=taken&domain=${domain.domain}`
       // const domainURL = domain
       request(domainURL, (err, res, body) => {
           counter++
           // body = `{"status":"0","taken":0}`
           let domainInfo = {
-            URL: domain
+            URL: domain.domain,
+            searchTerm: domain.searchTerm
           }
           if (!JSON.parse(body).taken) {
             domainInfo.available = true

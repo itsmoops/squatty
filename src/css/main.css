@@ -17,9 +17,14 @@ select {
   vertical-align: top;
 }
 
+a {
+  color: white
+}
+
 a:hover {
   cursor: pointer;
   text-decoration: none;
+  color: #bdc3be
 }
 
 a:visited {
@@ -30,7 +35,7 @@ a:focus {
   text-decoration: none;
 }
 
-.container {
+.squatty-container {
   margin-top: 20px;
   height: 100%;
   top: 0px;
@@ -72,4 +77,33 @@ a:focus {
 
 .unavailable:focus {
   color: #a63a3a;
+}
+
+/* Bootstrap Media Queries */
+/* xs */
+@media(max-width:767px) {
+  .content {
+    font-size: 15px;
+  }
+}
+
+/* s */
+@media(min-width:768px) {
+  .content {
+    font-size: 15px;
+  }
+}
+
+/* m */
+@media(min-width:992px) {
+  .content {
+    font-size: 30px;
+  }
+}
+
+/* lg */
+@media(min-width:1200px) {
+  .content {
+    font-size: 40px;
+  }
 }

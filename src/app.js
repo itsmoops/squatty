@@ -20,15 +20,16 @@ fetchUrls('/google-trending-domains').then((data) => {
   JSON.parse(data).forEach((domain, idx) => {
     if (idx > 0) {
       let namecheapUrl = `https://www.namecheap.com/domains/registration/results.aspx?domain=`
+      let googleSearchURL = `https://www.google.com/#safe=strict&q=`
       if (domain.available) {
-        googleDomains += `<div class="col-xs-12 content"><a href="${namecheapUrl}${domain.URL}" target="_blank" class="available">${domain.URL}</a></div>`
+        googleDomains += `<div class="col-xs-12 content"><a href="${namecheapUrl}${domain.URL}" target="_blank" class="available">${domain.URL}</a> - <a href="${googleSearchURL}${domain.searchTerm}" target="_blank">${domain.searchTerm}</a></div>`
       } else {
-        googleDomains += `<div class="col-xs-12 content"><a href="${namecheapUrl}${domain.URL}" target="_blank" class="unavailable">${domain.URL}</a></div>`
+        googleDomains += `<div class="col-xs-12 content"><a href="${namecheapUrl}${domain.URL}" target="_blank" class="unavailable">${domain.URL}</a> - <a href="${googleSearchURL}${domain.searchTerm}" target="_blank">${domain.searchTerm}</a></div>`
       }
     }
   })
   googleDomains += `</div>`
-  $('.container').append(googleDomains)
+  $('.squatty-container').append(googleDomains)
 })
 
 const threeLetterDomains = ``
