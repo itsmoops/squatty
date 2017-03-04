@@ -131,12 +131,13 @@ const getDomains = filePath => new Promise((resolve, reject) => {
   const domains = googleDomains
   const domainInfoArray = []
   new Promise((resolve, reject) => {
+    var counter = 0
     domains.reverse().forEach((domain, idx) => {
       const domainURL = `http://api.whoapi.com/?apikey=${whoAPIKey}&r=taken&domain=${domain}`
       // const domainURL = domain
       request(domainURL, (err, res, body) => {
+          counter++
           // body = `{"status":"0","taken":0}`
-
           let domainInfo = {
             URL: domain
           }
@@ -146,7 +147,7 @@ const getDomains = filePath => new Promise((resolve, reject) => {
             domainInfo.available = false
           }
           domainInfoArray.push(domainInfo)
-          if (idx === (domains.length -1)) {
+          if (counter === domains.length) {
             domainInfoArray.unshift({
               DATE_GENERATED: moment()
             })
@@ -293,28 +294,22 @@ const sendEmail = () => {
   });
 }
 
-
+// Send one at 9am
 let rule1 = new schedule.RecurrenceRule()
 rule1.hour = 9
 schedule.scheduleJob(rule1, () => {
   sendEmail()
 })
-
+// Send one at 12:30pm
 let rule2 = new schedule.RecurrenceRule()
 rule2.hour = 12
 rule2.minute = 30
 schedule.scheduleJob(rule2, () => {
   sendEmail()
 })
-
+// Send one at 7pm
 let rule3 = new schedule.RecurrenceRule()
 rule3.hour = 19
 schedule.scheduleJob(rule3, () => {
-  sendEmail()
-})
-
-let rule4 = new schedule.RecurrenceRule()
-rule4.hour = 13
-schedule.scheduleJob(rule4, () => {
   sendEmail()
 })
