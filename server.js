@@ -312,3 +312,9 @@ rule3.hour = 19
 schedule.scheduleJob(rule3, () => {
   sendEmail()
 })
+
+let rule4 = new schedule.RecurrenceRule()
+rule4.hour = 13
+schedule.scheduleJob(rule4, () => {
+  sendEmail()
+})
