@@ -84,6 +84,7 @@ let transporter = nodemailer.createTransport({
 })
 
 const sendEmail = () => {
+  console.log('email sent!')
   const domains = require(filePath)
   let linkContainerStyle = `width:100%;padding-left:15px;font-size:15px;`
   let availableStyle = `color:#55c16a;`
@@ -145,28 +146,28 @@ const emailJob = () => {
   })
 }
 
-// // Send one at 9am
-// let rule1 = new schedule.RecurrenceRule()
-// rule1.hour = 9
-// schedule.scheduleJob(rule1, () => {
-//   emailJob()
-// })
-// // Send one at 12:30pm
-// let rule2 = new schedule.RecurrenceRule()
-// rule2.hour = 12
-// rule2.minute = 30
-// schedule.scheduleJob(rule2, () => {
-//   emailJob()
-// })
-// // Send one at 4pm
-// let rule3 = new schedule.RecurrenceRule()
-// rule3.hour = 16
-// schedule.scheduleJob(rule3, () => {
-//   emailJob()
-// })
-// // Send one at 7pm
-// let rule4 = new schedule.RecurrenceRule()
-// rule4.hour = 19
-// schedule.scheduleJob(rule4, () => {
-//   emailJob()
-// })
+// Send one at 9am
+let rule1 = new schedule.RecurrenceRule()
+rule1.hour = 9
+schedule.scheduleJob(rule1, () => {
+  emailJob()
+})
+// Send one at 12:30pm
+let rule2 = new schedule.RecurrenceRule()
+rule2.hour = 12
+rule2.minute = 30
+schedule.scheduleJob(rule2, () => {
+  emailJob()
+})
+// Send one at 4pm
+let rule3 = new schedule.RecurrenceRule()
+rule3.hour = 16
+schedule.scheduleJob(rule3, () => {
+  emailJob()
+})
+// Send one at 7pm
+let rule4 = new schedule.RecurrenceRule()
+rule4.hour = 19
+schedule.scheduleJob(rule4, () => {
+  emailJob()
+})
