@@ -84,7 +84,6 @@ let transporter = nodemailer.createTransport({
 })
 
 const sendEmail = () => {
-  console.log('hullooooo')
   const domains = require(filePath)
   let linkContainerStyle = `width:100%;padding-left:15px;font-size:15px;`
   let availableStyle = `color:#55c16a;`
@@ -141,7 +140,7 @@ const sendEmail = () => {
 // Test
 let rule = new schedule.RecurrenceRule()
 rule.hour = 19
-rule.minute = 32
+rule.minute = 37
 schedule.scheduleJob(rule, () => {
   getDomains().then(domains => {
     writeFile(filePath, domains)
