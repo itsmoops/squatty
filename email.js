@@ -140,7 +140,7 @@ const sendEmail = () => {
 // Test
 let rule = new schedule.RecurrenceRule()
 rule.hour = 19
-rule.minute = 37
+rule.minute = 41
 schedule.scheduleJob(rule, () => {
   getDomains().then(domains => {
     writeFile(filePath, domains)
