@@ -10,18 +10,9 @@ const schedule = require('node-schedule')
 
 const tld = `com`
 
-const alphabet = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z']
-const vowels = ['a','e','i','o','u']
-
-const googleDomains = []
-const threeLetterCombos = []
-const fourLetterCombos = []
-const fiveLetterCombos = []
-
 const app = express()
 app.set('port', process.env.PORT || 8080)
 app.set('json spaces', 2)
-
 app.use(express.static(path.join(__dirname, '/src')))
 
 app.get('/', (request, response) => {
@@ -32,145 +23,74 @@ app.listen(app.get('port'), () => {
   console.log('Node app is running on port', app.get('port'))
 })
 
+// creates json file, needs file path and data
+const writeFile = (filePath, data) => {
+  jsonfile.writeFile(filePath, data, { spaces: 2 }, (err) => {
+    if (err) console.error(err)
+  })
+}
+
+// gets rid of spaces and unwanted characters
 const sanitizeDomains = (searchTerm) => {
   let sanitized = `${searchTerm.toLowerCase().replace(/ /g, "").replace(/\./g, "")}.${tld}`
   return sanitized
 }
 
-const getTrendingGoogleSearchDomains = () => {
-  const googleTrendsURL1 = `http://hawttrends.appspot.com/api/terms/`
-  request(googleTrendsURL1, (err, res, body) => {
-    if (body) {
+const getTrendingGoogleSearchDomains = () => new Promise((resolve, reject) => {
+  const googleTrendsURL = `http://hawttrends.appspot.com/api/terms/`
+  const domainArray = []
+  new Promise((resolve, reject) => {
+    request(googleTrendsURL, (err, res, body) => {
       let data = JSON.parse(body)
-      if (data) {
-        data[1].forEach((searchTerm) => {
+      if (data && data[1]) {
+        data[1].forEach((searchTerm, idx) => {
           let sanitizedDomain = sanitizeDomains(searchTerm)
-          googleDomains.push({
-            domain: sanitizedDomain,
+          domainArray.push({
+            URL: sanitizedDomain,
             searchTerm: searchTerm
           })
+          if (idx === (data[1].length - 1)) {
+            resolve(domainArray)
+          }
         })
       }
-    }
-  })
-}
-
-const generateLetterCombinations = (num) => {
-  const filePath = `./data/${num}-letter-domains.json`
-  var domain = ``
-  var first = ``
-  var second = ``
-  var third = ``
-  var fourth = ``
-  var fifth = ``
-  if (num === 3) {
-    alphabet.forEach((firstLetter) => {
-      first = firstLetter
-      alphabet.forEach((secondLetter) => {
-        second = secondLetter
-        alphabet.forEach((thirdLetter) => {
-          third = thirdLetter
-          domain = `${first}${second}${third}.${tld}`
-          threeLetterCombos.push(domain)
-          if (first === 'z' && second === 'z' && third === 'z') {
-            jsonfile.writeFile(filePath, threeLetterCombos, { spaces: 2 }, (err) => {
-              if (err) console.error(err)
-            })
-          }
-        })
-      })
-    })
-  }
-  if (num === 4) {
-    alphabet.forEach((firstLetter) => {
-      first = firstLetter
-      alphabet.forEach((secondLetter) => {
-        second = secondLetter
-        alphabet.forEach((thirdLetter) => {
-          third = thirdLetter
-          alphabet.forEach((fourthLetter) => {
-            fourth = fourthLetter
-            domain = `${first}${second}${third}${fourth}.${tld}`
-            fourLetterCombos.push(domain)
-            if (first === 'z' && second === 'z' && third === 'z' && fourth === 'z') {
-              jsonfile.writeFile(filePath, fourLetterCombos, { spaces: 2 }, (err) => {
-                if (err) console.error(err)
-              })
-            }
-          })
-        })
-      })
-    })
-  }
-  if (num === 5) {
-    alphabet.forEach((firstLetter) => {
-      first = firstLetter
-      alphabet.forEach((secondLetter) => {
-        second = secondLetter
-        alphabet.forEach((thirdLetter) => {
-          third = thirdLetter
-          alphabet.forEach((fourthLetter) => {
-            fourth = fourthLetter
-            alphabet.forEach((fifthLetter) => {
-              fifth = fifthLetter
-              domain = `${first}${second}${third}${fourth}${fifth}.${tld}`
-              fiveLetterCombos.push(domain)
-              if (first === 'z' && second === 'z' && third === 'z' && fourth === 'z' && fifth === 'z') {
-                jsonfile.writeFile(filePath, fiveLetterCombos, { spaces: 2 }, (err) => {
-                  if (err) console.error(err)
-                })
-              }
-            })
-          })
-        })
-      })
-    })
-  }
-}
-
-const getDomains = filePath => new Promise((resolve, reject) => {
-  // WhoAPI
-  const whoAPIKey = `b27983e0f59374a7c031a487727f93ae`
-  const domains = googleDomains
-  const domainInfoArray = []
-  new Promise((resolve, reject) => {
-    var counter = 0
-    domains.reverse().forEach((domain, idx) => {
-      const domainURL = `http://api.whoapi.com/?apikey=${whoAPIKey}&r=taken&domain=${domain.domain}`
-      // const domainURL = domain
-      request(domainURL, (err, res, body) => {
-          counter++
-          // body = `{"status":"0","taken":0}`
-          let domainInfo = {
-            URL: domain.domain,
-            searchTerm: domain.searchTerm
-          }
-          if (!JSON.parse(body).taken) {
-            domainInfo.available = true
-          } else {
-            domainInfo.available = false
-          }
-          domainInfoArray.push(domainInfo)
-          if (counter === domains.length) {
-            domainInfoArray.unshift({
-              DATE_GENERATED: moment()
-            })
-            console.log(domainInfoArray)
-            jsonfile.writeFile(filePath, domainInfoArray, { spaces: 2 }, (err) => {
-              if (err) console.error(err)
-            })
-            resolve()
-          }
-      })
     })
   })
-  .then(() => resolve(domainInfoArray))
+  .then(() => resolve(domainArray))
   .catch(err => reject(err))
 })
 
-/**
-* checks to see if a domains.json file already exists
-*/
+// Requests whether a URL has been taken from WhoAPI
+const getDomains = () => new Promise((resolve, reject) => {
+  const whoAPIKey = `b27983e0f59374a7c031a487727f93ae`
+  // for now we're just doing the 20 trending from Google
+  getTrendingGoogleSearchDomains().then(domains => {
+    const domainArray = []
+    new Promise((resolve, reject) => {
+      var counter = 0
+      domains.reverse().forEach((domain, idx) => {
+        const domainURL = `http://api.whoapi.com/?apikey=${whoAPIKey}&r=taken&domain=${domain.URL}`
+        request(domainURL, (err, res, body) => {
+            counter++
+            domain.asOf = moment().format('MM/DD/YYYY h:mma')
+            if (!JSON.parse(body).taken) {
+              domain.available = true
+            } else {
+              domain.available = false
+            }
+            domainArray.push(domain)
+            if (counter === domains.length) {
+              resolve(domainArray)
+            }
+        })
+      })
+    })
+    .then(() => resolve(domainArray))
+    .catch(err => reject(err))
+  })
+})
+
+// checks to see if a domains.json file already exists
 const fileExists = filePath => new Promise((resolve, reject) => {
   fs.stat(filePath, (err, stat) => {
     if (!err) {
@@ -183,60 +103,26 @@ const fileExists = filePath => new Promise((resolve, reject) => {
   })
 })
 
-getTrendingGoogleSearchDomains()
-// generateLetterCombinations(3)
-// generateLetterCombinations(4)
-// generateLetterCombinations(5)
-
 app.get('/google-trending-domains', (request, response) => {
   const filePath = './data/google-trending-domains.json'
   // check if file exists
   fileExists(filePath).then(exists => {
     if (exists) {
-      const today = moment()
-      domains = require(filePath)
-      /* we only want to generate new domains once per day
-      * so we check against the "DATE_GENERATED" property */
-      if (today.isAfter(domains[0].DATE_GENERATED, 'hour')) {
-        // if it's been more than a day, regenerate domains
-        getDomains(filePath).then(domainInfo => {
-          response.json(domainInfo)
-        })
-      } else {
-        // if it hasn't been a day, don't regenerate
-        response.json(domains)
-      }
+      // if the json file already exists, just serve it up
+      const domains = require(filePath)
+      response.json(domains)
     } else {
-      // if it doesn't exist, create a file
-      getDomains(filePath).then(domainInfo => {
-        // write json file
-        response.json(domainInfo)
+      // if it doesn't exist get the domains, then create a file
+      getDomains().then(domains => {
+        writeFile(filePath, domains)
+        response.json(domains)
       })
     }
   })
 })
 
-app.get('/three-letter-domains', (request, response) => {
-  const filePath = './data/3-letter-domains.json'
-  const domains = require(filePath)
-  response.json(domains)
-})
-
-app.get('/four-letter-domains', (request, response) => {
-  const filePath = './data/4-letter-domains.json'
-  const domains = require(filePath)
-  response.json(domains)
-})
-
-app.get('/five-letter-domains', (request, response) => {
-  const filePath = './data/5-letter-domains.json'
-  const domains = require(filePath)
-  response.json(domains)
-})
-
 
 // EMAIL SETTINGS //
-// create reusable transporter object using the default SMTP transport
 let transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -285,8 +171,8 @@ const sendEmail = () => {
                   </html>`
   let mailOptions = {
       from: `"Squatty Domains 💩" <squattydomains@gmail.com>`, // sender address
-      to: `moore.ericc@gmail.com`, // list of receivers, comma separate to add more
-      subject: `Available Domains`, // Subject line
+      to: `moore.ericc@gmail.com, karl.schwende@gmail.com`, // list of receivers, comma separate to add more
+      subject: `Trending Domains`, // Subject line
       html: mailBody // html body
   }
   // send mail with defined transport object
@@ -298,22 +184,67 @@ const sendEmail = () => {
   });
 }
 
+// SCHEDULE EMAILS //
+// Every hour
+let rule = new schedule.RecurrenceRule()
+rule.hour = 18
+rule.minute = 30
+schedule.scheduleJob(rule, () => {
+  getDomains().then(domains => {
+    const filePath = './data/google-trending-domains.json'
+    writeFile(filePath, domains)
+    setTimeout(() => {
+      sendEmail()
+    }, 1000)
+  })
+})
+
 // Send one at 9am
 let rule1 = new schedule.RecurrenceRule()
 rule1.hour = 9
 schedule.scheduleJob(rule1, () => {
-  sendEmail()
+  getDomains().then(domains => {
+    const filePath = './data/google-trending-domains.json'
+    writeFile(filePath, domains)
+    setTimeout(() => {
+      sendEmail()
+    }, 1000)
+  })
 })
 // Send one at 12:30pm
 let rule2 = new schedule.RecurrenceRule()
 rule2.hour = 12
 rule2.minute = 30
 schedule.scheduleJob(rule2, () => {
-  sendEmail()
+  sgetDomains().then(domains => {
+    const filePath = './data/google-trending-domains.json'
+    writeFile(filePath, domains)
+    setTimeout(() => {
+      sendEmail()
+    }, 1000)
+  })
+})
+// Send one at 4pm
+let rule3 = new schedule.RecurrenceRule()
+rule3.hour = 16
+schedule.scheduleJob(rule3, () => {
+  getDomains().then(domains => {
+    const filePath = './data/google-trending-domains.json'
+    writeFile(filePath, domains)
+    setTimeout(() => {
+      sendEmail()
+    }, 1000)
+  })
 })
 // Send one at 7pm
-let rule3 = new schedule.RecurrenceRule()
-rule3.hour = 19
-schedule.scheduleJob(rule3, () => {
-  sendEmail()
+let rule4 = new schedule.RecurrenceRule()
+rule4.hour = 19
+schedule.scheduleJob(rule4, () => {
+  getDomains().then(domains => {
+    const filePath = './data/google-trending-domains.json'
+    writeFile(filePath, domains)
+    setTimeout(() => {
+      sendEmail()
+    }, 1000)
+  })
 })

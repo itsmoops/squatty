@@ -11,6 +11,10 @@ h1 {
   padding-left: 15px;
 }
 
+h2 {
+  padding-left: 15px;
+}
+
 select {
   color: black;
   display: inline;

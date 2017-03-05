@@ -17,8 +17,10 @@ const fetchUrls = endpoint => new Promise((resolve, reject) => {
 const googleDomains = ``
 fetchUrls('/google-trending-domains').then((data) => {
   let googleDomains = `<div id="google-trending-domains">`
+  let dateGenerated = ``
   JSON.parse(data).forEach((domain, idx) => {
     if (idx > 0) {
+      dateGenerated = `<h2>As of ${domain.asOf}</h2>`
       let namecheapUrl = `https://www.namecheap.com/domains/registration/results.aspx?domain=`
       let googleSearchURL = `https://www.google.com/#safe=strict&q=`
       if (domain.available) {
@@ -29,6 +31,7 @@ fetchUrls('/google-trending-domains').then((data) => {
     }
   })
   googleDomains += `</div>`
+  $('.squatty-container').append(dateGenerated)
   $('.squatty-container').append(googleDomains)
 })
 
@@ -50,5 +53,4 @@ fetchUrls('/three-letter-domains').then((data) => {
     }
   })
   threeLetterDomains += `</div>`
-  // $('.container').append(threeLetterDomains)
 })
