@@ -123,8 +123,8 @@ const sendEmail = () => {
                     </div>
                   </html>`
   let mailOptions = {
-      from: `"Squatty Domains 💩" <squattydomains@gmail.com>`, // sender address
-      to: `moore.ericc@gmail.com`, // list of receivers, comma separate to add more
+      from: `"Squatty Domains" <squattydomains@gmail.com>`, // sender address
+      to: `moore.ericc@gmail.com, karl.schwende@gmail.com`, // list of receivers, comma separate to add more
       subject: `Trending Domains`, // Subject line
       html: mailBody // html body
   }
@@ -145,13 +145,6 @@ const emailJob = () => {
     }, 1000)
   })
 }
-
-let rule = new schedule.RecurrenceRule()
-rule.hour = 17
-rule.minute = 7
-schedule.scheduleJob(rule, () => {
-  emailJob()
-})
 
 // Send one at 9am
 let rule1 = new schedule.RecurrenceRule()
