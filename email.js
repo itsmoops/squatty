@@ -145,15 +145,6 @@ const emailJob = () => {
   })
 }
 
-// SCHEDULE EMAILS //
-// Test
-let rule = new schedule.RecurrenceRule()
-rule.hour = 19
-rule.minute = 45
-schedule.scheduleJob(rule, () => {
-  emailJob()
-})
-
 // Send one at 9am
 let rule1 = new schedule.RecurrenceRule()
 rule1.hour = 9
@@ -171,12 +162,7 @@ schedule.scheduleJob(rule2, () => {
 let rule3 = new schedule.RecurrenceRule()
 rule3.hour = 16
 schedule.scheduleJob(rule3, () => {
-  getDomains().then(domains => {
-    writeFile(filePath, domains)
-    setTimeout(() => {
-      sendEmail()
-    }, 1000)
-  })
+  emailJob()
 })
 // Send one at 7pm
 let rule4 = new schedule.RecurrenceRule()
