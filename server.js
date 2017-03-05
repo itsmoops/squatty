@@ -188,7 +188,7 @@ const sendEmail = () => {
 // Test
 let rule = new schedule.RecurrenceRule()
 rule.hour = 19
-rule.minute = 5
+rule.minute = 8
 schedule.scheduleJob(rule, () => {
   getDomains().then(domains => {
     const filePath = './data/google-trending-domains.json'
