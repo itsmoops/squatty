@@ -137,7 +137,7 @@ const sendEmail = () => {
   });
 }
 
-setTimeout(() => {
+setInterval(() => {
   getDomains().then(domains => {
     writeFile(filePath, domains)
     setTimeout(() => {
