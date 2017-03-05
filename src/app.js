@@ -14,7 +14,6 @@ const fetchUrls = endpoint => new Promise((resolve, reject) => {
   request.send()
 })
 
-const googleDomains = ``
 fetchUrls('/google-trending-domains').then((data) => {
   let googleDomains = `<div id="google-trending-domains">`
   let dateGenerated = ``
