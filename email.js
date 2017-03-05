@@ -84,7 +84,8 @@ let transporter = nodemailer.createTransport({
 })
 
 const sendEmail = () => {
-  const domains = require(`./data/google-trending-domains.json`)
+  console.log('hullooooo')
+  const domains = require(filePath)
   let linkContainerStyle = `width:100%;padding-left:15px;font-size:15px;`
   let availableStyle = `color:#55c16a;`
   let unavailableStyle = `color:#c94646;`
