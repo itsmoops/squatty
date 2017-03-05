@@ -137,9 +137,18 @@ const sendEmail = () => {
   });
 }
 
+const emailJob = () => {
+  getDomains().then(domains => {
+    writeFile(filePath, domains)
+    setTimeout(() => {
+      sendEmail()
+    }, 1000)
+  })
+}
+
 let rule = new schedule.RecurrenceRule()
-rule.hour = 21
-rule.minute = 15
+rule.hour = 16
+rule.minute = 43
 schedule.scheduleJob(rule, () => {
   emailJob()
 })
