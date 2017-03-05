@@ -105,18 +105,25 @@ const fileExists = filePath => new Promise((resolve, reject) => {
 
 app.get('/google-trending-domains', (request, response) => {
   const filePath = './data/google-trending-domains.json'
-  // check if file exists
-  fileExists(filePath).then(exists => {
-    if (exists) {
-      // if the json file already exists, just serve it up
-      const domains = require(filePath)
-      response.json(domains)
-    } else {
-      // if it doesn't exist get the domains, then create a file
-      getDomains().then(domains => {
-        writeFile(filePath, domains)
-        response.json(domains)
-      })
-    }
+
+  // for the time being, let's just do a fresh lookup every page load
+  getDomains().then(domains => {
+    writeFile(filePath, domains)
+    response.json(domains)
   })
+
+  // check if file exists
+  // fileExists(filePath).then(exists => {
+  //   if (exists) {
+  //     // if the json file already exists, just serve it up
+  //     const domains = require(filePath)
+  //     response.json(domains)
+  //   } else {
+  //     // if it doesn't exist get the domains, then create a file
+  //     getDomains().then(domains => {
+  //       writeFile(filePath, domains)
+  //       response.json(domains)
+  //     })
+  //   }
+  // })
 })
