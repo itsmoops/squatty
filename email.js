@@ -136,42 +136,36 @@ const sendEmail = () => {
   });
 }
 
-// SCHEDULE EMAILS //
-// Test
-let rule = new schedule.RecurrenceRule()
-rule.hour = 19
-rule.minute = 41
-schedule.scheduleJob(rule, () => {
+const emailJob = () => {
   getDomains().then(domains => {
     writeFile(filePath, domains)
     setTimeout(() => {
       sendEmail()
     }, 1000)
   })
+}
+
+// SCHEDULE EMAILS //
+// Test
+let rule = new schedule.RecurrenceRule()
+rule.hour = 19
+rule.minute = 45
+schedule.scheduleJob(rule, () => {
+  emailJob()
 })
 
 // Send one at 9am
 let rule1 = new schedule.RecurrenceRule()
 rule1.hour = 9
 schedule.scheduleJob(rule1, () => {
-  getDomains().then(domains => {
-    writeFile(filePath, domains)
-    setTimeout(() => {
-      sendEmail()
-    }, 1000)
-  })
+  emailJob()
 })
 // Send one at 12:30pm
 let rule2 = new schedule.RecurrenceRule()
 rule2.hour = 12
 rule2.minute = 30
 schedule.scheduleJob(rule2, () => {
-  sgetDomains().then(domains => {
-    writeFile(filePath, domains)
-    setTimeout(() => {
-      sendEmail()
-    }, 1000)
-  })
+  emailJob()
 })
 // Send one at 4pm
 let rule3 = new schedule.RecurrenceRule()
@@ -188,10 +182,5 @@ schedule.scheduleJob(rule3, () => {
 let rule4 = new schedule.RecurrenceRule()
 rule4.hour = 19
 schedule.scheduleJob(rule4, () => {
-  getDomains().then(domains => {
-    writeFile(filePath, domains)
-    setTimeout(() => {
-      sendEmail()
-    }, 1000)
-  })
+  emailJob()
 })
