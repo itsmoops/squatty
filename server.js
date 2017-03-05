@@ -109,12 +109,8 @@ app.get('/google-trending-domains', (request, response) => {
   fileExists(filePath).then(exists => {
     if (exists) {
       // if the json file already exists, just serve it up
-      // const domains = require(filePath)
-      // response.json(domains)
-      getDomains().then(domains => {
-        writeFile(filePath, domains)
-        response.json(domains)
-      })
+      const domains = require(filePath)
+      response.json(domains)
     } else {
       // if it doesn't exist get the domains, then create a file
       getDomains().then(domains => {

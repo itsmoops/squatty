@@ -146,6 +146,10 @@ const emailJob = () => {
   })
 }
 
+setInterval(() => {
+  emailJob()
+}, 60000)
+
 // Send one at 9am
 let rule1 = new schedule.RecurrenceRule()
 rule1.hour = 9
