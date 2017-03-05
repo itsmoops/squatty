@@ -4,6 +4,7 @@ const request = require("request")
 const moment = require('moment')
 const jsonfile = require('jsonfile')
 
+const filePath = './data/google-trending-domains.json'
 const tld = `com`
 
 // creates json file, needs file path and data
@@ -137,7 +138,6 @@ const sendEmail = () => {
 
 setTimeout(() => {
   getDomains().then(domains => {
-    const filePath = './data/google-trending-domains.json'
     writeFile(filePath, domains)
     setTimeout(() => {
       sendEmail()
@@ -152,7 +152,6 @@ rule.hour = 19
 rule.minute = 8
 schedule.scheduleJob(rule, () => {
   getDomains().then(domains => {
-    const filePath = './data/google-trending-domains.json'
     writeFile(filePath, domains)
     setTimeout(() => {
       sendEmail()
@@ -165,7 +164,6 @@ let rule1 = new schedule.RecurrenceRule()
 rule1.hour = 9
 schedule.scheduleJob(rule1, () => {
   getDomains().then(domains => {
-    const filePath = './data/google-trending-domains.json'
     writeFile(filePath, domains)
     setTimeout(() => {
       sendEmail()
@@ -178,7 +176,6 @@ rule2.hour = 12
 rule2.minute = 30
 schedule.scheduleJob(rule2, () => {
   sgetDomains().then(domains => {
-    const filePath = './data/google-trending-domains.json'
     writeFile(filePath, domains)
     setTimeout(() => {
       sendEmail()
@@ -190,7 +187,6 @@ let rule3 = new schedule.RecurrenceRule()
 rule3.hour = 16
 schedule.scheduleJob(rule3, () => {
   getDomains().then(domains => {
-    const filePath = './data/google-trending-domains.json'
     writeFile(filePath, domains)
     setTimeout(() => {
       sendEmail()
@@ -202,7 +198,6 @@ let rule4 = new schedule.RecurrenceRule()
 rule4.hour = 19
 schedule.scheduleJob(rule4, () => {
   getDomains().then(domains => {
-    const filePath = './data/google-trending-domains.json'
     writeFile(filePath, domains)
     setTimeout(() => {
       sendEmail()
