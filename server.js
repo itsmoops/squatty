@@ -171,7 +171,7 @@ const sendEmail = () => {
                   </html>`
   let mailOptions = {
       from: `"Squatty Domains 💩" <squattydomains@gmail.com>`, // sender address
-      to: `moore.ericc@gmail.com, karl.schwende@gmail.com`, // list of receivers, comma separate to add more
+      to: `moore.ericc@gmail.com`, // list of receivers, comma separate to add more
       subject: `Trending Domains`, // Subject line
       html: mailBody // html body
   }
@@ -185,10 +185,10 @@ const sendEmail = () => {
 }
 
 // SCHEDULE EMAILS //
-// Every hour
+// Test
 let rule = new schedule.RecurrenceRule()
-rule.hour = 18
-rule.minute = 35
+rule.hour = 19
+rule.minute = 5
 schedule.scheduleJob(rule, () => {
   getDomains().then(domains => {
     const filePath = './data/google-trending-domains.json'
