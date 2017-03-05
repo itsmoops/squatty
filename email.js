@@ -9,9 +9,8 @@ const tld = `com`
 
 // creates json file, needs file path and data
 const writeFile = (filePath, data) => {
-  console.log('writing file')
   jsonfile.writeFile(filePath, data, { spaces: 2 }, (err) => {
-    if (err) console.log(err)
+    if (err) console.error(err)
   })
 }
 
@@ -147,9 +146,11 @@ const emailJob = () => {
   })
 }
 
-setInterval(() => {
+let rule = new schedule.RecurrenceRule()
+rule.hour = 11
+schedule.scheduleJob(rule, () => {
   emailJob()
-}, 120000)
+})
 
 // Send one at 9am
 let rule1 = new schedule.RecurrenceRule()
