@@ -13,6 +13,7 @@ h1 {
 
 h2 {
   padding-left: 15px;
+  font-size: 40px
 }
 
 select {
@@ -50,7 +51,7 @@ a:focus {
 
 .content {
   display: block;
-  font-size: 40px;
+  font-size: 35px;
 }
 
 .available {
@@ -110,6 +111,6 @@ a:focus {
 /* lg */
 @media(min-width:1200px) {
   .content {
-    font-size: 40px;
+    font-size: 35px;
   }
 }

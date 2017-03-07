@@ -14,25 +14,52 @@ const fetchUrls = endpoint => new Promise((resolve, reject) => {
   request.send()
 })
 
-fetchUrls('/google-trending-domains').then((data) => {
-  let googleDomains = `<div id="google-trending-domains">`
-  let dateGenerated = ``
-  JSON.parse(data).forEach((domain, idx) => {
-    if (idx > 0) {
-      dateGenerated = `<h2>As of ${domain.asOf}</h2>`
-      let namecheapUrl = `https://www.namecheap.com/domains/registration/results.aspx?domain=`
-      let googleSearchURL = `https://www.google.com/#safe=strict&q=`
-      if (domain.available) {
-        googleDomains += `<div class="col-xs-12 content"><a href="${namecheapUrl}${domain.URL}" target="_blank" class="available">${domain.URL}</a> - <a href="${googleSearchURL}${domain.searchTerm}" target="_blank">${domain.searchTerm}</a></div>`
-      } else {
-        googleDomains += `<div class="col-xs-12 content"><a href="${namecheapUrl}${domain.URL}" target="_blank" class="unavailable">${domain.URL}</a> - <a href="${googleSearchURL}${domain.searchTerm}" target="_blank">${domain.searchTerm}</a></div>`
+const getGoogleDomains = () => new Promise((resolve, reject) => {
+  fetchUrls('/google-trending-domains').then((data) => {
+    let googleDomains = `<div id="google-trending-domains">`
+    let dateGenerated = ``
+    JSON.parse(data).forEach((domain, idx) => {
+      if (idx > 0) {
+        dateGenerated = `<h2>Google trending searches as of ${domain.as_of}</h2>`
+        let namecheapUrl = `https://www.namecheap.com/domains/registration/results.aspx?domain=`
+        let googleSearchURL = `https://www.google.com/#safe=strict&q=`
+        if (domain.available) {
+          googleDomains += `<div class="col-xs-12 content"><a href="${namecheapUrl}${domain.URL}" target="_blank" class="available">${domain.URL}</a> - <a href="${googleSearchURL}${domain.searchTerm}" target="_blank">${domain.searchTerm}</a></div>`
+        } else {
+          googleDomains += `<div class="col-xs-12 content"><a href="${namecheapUrl}${domain.URL}" target="_blank" class="unavailable">${domain.URL}</a> - <a href="${googleSearchURL}${domain.searchTerm}" target="_blank">${domain.searchTerm}</a></div>`
+        }
       }
-    }
+    })
+    googleDomains += `</div>`
+    $('.squatty-container').append(dateGenerated)
+    $('.squatty-container').append(googleDomains)
   })
-  googleDomains += `</div>`
-  $('.squatty-container').append(dateGenerated)
-  $('.squatty-container').append(googleDomains)
 })
+
+const getTwitterDomains = () => new Promise((resolve, reject) => {
+  fetchUrls('/twitter-trending-domains').then((data) => {
+    let twitterDomains = `<div id="twitter-trending-domains">`
+    let dateGenerated = ``
+    JSON.parse(data).forEach((domain, idx) => {
+      if (idx > 0) {
+        dateGenerated = `<h2>Twitter trending terms as of ${domain.as_of}</h2>`
+        let namecheapUrl = `https://www.namecheap.com/domains/registration/results.aspx?domain=`
+        let twitterSearchURL = `http://twitter.com/search?q=`
+        if (domain.available) {
+          twitterDomains += `<div class="col-xs-12 content"><a href="${namecheapUrl}${domain.URL}" target="_blank" class="available">${domain.URL}</a> - <a href="${twitterSearchURL}${domain.query}" target="_blank">${domain.searchTerm}</a></div>`
+        } else {
+          twitterDomains += `<div class="col-xs-12 content"><a href="${namecheapUrl}${domain.URL}" target="_blank" class="unavailable">${domain.URL}</a> - <a href="${twitterSearchURL}${domain.query}" target="_blank">${domain.searchTerm}</a></div>`
+        }
+      }
+    })
+    twitterDomains += `</div>`
+    $('.squatty-container').append(dateGenerated)
+    $('.squatty-container').append(twitterDomains)
+  })
+})
+
+getGoogleDomains()
+.then(getTwitterDomains())
 
 // const threeLetterDomains = ``
 // fetchUrls('/three-letter-domains').then((data) => {

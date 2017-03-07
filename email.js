@@ -84,7 +84,6 @@ let transporter = nodemailer.createTransport({
 })
 
 const sendEmail = () => {
-  console.log('email sent!')
   const domains = require(filePath)
   let linkContainerStyle = `width:100%;padding-left:15px;font-size:15px;`
   let availableStyle = `color:#55c16a;`
@@ -124,7 +123,7 @@ const sendEmail = () => {
                   </html>`
   let mailOptions = {
       from: `"Squatty Domains" <squattydomains@gmail.com>`, // sender address
-      to: `moore.ericc@gmail.com, karl.schwende@gmail.com`, // list of receivers, comma separate to add more
+      to: `moore.ericc@gmail.com`, // list of receivers, comma separate to add more
       subject: `Trending Domains`, // Subject line
       html: mailBody // html body
   }
@@ -146,28 +145,27 @@ const emailJob = () => {
   })
 }
 
-// Send one at 9am
-// let rule1 = new schedule.RecurrenceRule()
-// rule1.hour = 9
-// schedule.scheduleJob(rule1, () => {
-//   emailJob()
-// })
-// // Send one at 12:30pm
-// let rule2 = new schedule.RecurrenceRule()
-// rule2.hour = 12
-// rule2.minute = 30
-// schedule.scheduleJob(rule2, () => {
-//   emailJob()
-// })
-// // Send one at 4pm
-// let rule3 = new schedule.RecurrenceRule()
-// rule3.hour = 16
-// schedule.scheduleJob(rule3, () => {
-//   emailJob()
-// })
-// // Send one at 7pm
-// let rule4 = new schedule.RecurrenceRule()
-// rule4.hour = 19
-// schedule.scheduleJob(rule4, () => {
-//   emailJob()
-// })
+let rule1 = new schedule.RecurrenceRule();
+rule1.hour = 9;
+schedule.scheduleJob(`9am`, rule1, () => {
+  console.log('9 oclock');
+});
+
+let rule2 = new schedule.RecurrenceRule();
+rule2.hour = 12;
+rule2.minute = 30;
+schedule.scheduleJob(`12:30pm`, rule2, () => {
+  console.log('12:30 oclock');
+});
+
+let rule3 = new schedule.RecurrenceRule();
+rule3.hour = 16;
+schedule.scheduleJob(`4pm`, rule3, () => {
+  console.log('4 oclock');
+});
+
+let rule4 = new schedule.RecurrenceRule();
+rule4.hour = 19;
+schedule.scheduleJob(`7pm`, rule4, () => {
+  console.log('7 oclock');
+});
