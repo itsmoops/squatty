@@ -13,7 +13,6 @@ h1 {
 
 h2 {
   padding-left: 15px;
-  font-size: 40px;
   text-decoration: underline;
 }
 
@@ -43,8 +42,8 @@ a:focus {
   color: #9ea39f;
 }
 
-.domain-container {
-  margin-bottom: 10px;
+.last-item {
+  margin-bottom: 25px;
 }
 
 .squatty-container {
