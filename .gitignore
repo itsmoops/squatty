@@ -2,3 +2,8 @@ src/dist
 node_modules
 npm-debug.log
 domains.json
+google-trending-domains.json
+twitter-trending-domains.json
+3-letter-domains.json
+4-letter-domains.json
+5-letter-domains.json
