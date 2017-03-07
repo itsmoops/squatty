@@ -16,7 +16,7 @@ const fetchUrls = endpoint => new Promise((resolve, reject) => {
 
 const getGoogleDomains = () => new Promise((resolve, reject) => {
   fetchUrls('/google-trending-domains').then((data) => {
-    let googleDomains = `<div id="google-trending-domains">`
+    let googleDomains = `<div id="google-trending-domains" class="domain-container">`
     let dateGenerated = ``
     JSON.parse(data).forEach((domain, idx) => {
       if (idx > 0) {
@@ -60,23 +60,3 @@ const getTwitterDomains = () => new Promise((resolve, reject) => {
 
 getGoogleDomains()
 .then(getTwitterDomains())
-
-// const threeLetterDomains = ``
-// fetchUrls('/three-letter-domains').then((data) => {
-//   let threeLetterDomains = `<div id="three-letter-domains">`
-//   JSON.parse(data).forEach((domain, idx) => {
-//     domain = {
-//       URL: domain,
-//       available: false
-//     }
-//     if (idx > 0) {
-//       let namecheapUrl = `https://www.namecheap.com/domains/registration/results.aspx?domain=`
-//       if (domain.available) {
-//         threeLetterDomains += `<div class="col-xs-12 content"><a href="${namecheapUrl}${domain.URL}" target="_blank" class="available">${domain.URL}</a></div>`
-//       } else {
-//         threeLetterDomains += `<div class="col-xs-12 content"><a href="${namecheapUrl}${domain.URL}" target="_blank" class="unavailable">${domain.URL}</a></div>`
-//       }
-//     }
-//   })
-//   threeLetterDomains += `</div>`
-// })

@@ -13,7 +13,8 @@ h1 {
 
 h2 {
   padding-left: 15px;
-  font-size: 40px
+  font-size: 40px;
+  text-decoration: underline;
 }
 
 select {
@@ -40,6 +41,10 @@ a:visited {
 a:focus {
   text-decoration: none;
   color: #9ea39f;
+}
+
+.domain-container {
+  margin-bottom: 10px;
 }
 
 .squatty-container {
