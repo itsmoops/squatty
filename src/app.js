@@ -29,7 +29,7 @@ const getGoogleDomains = () => new Promise((resolve, reject) => {
         let googleSearchURL = `https://www.google.com/#safe=strict&q=`
         if (domain.available) {
           googleDomains += `<div class="col-xs-12 content ${lastItem}">
-                              <a href="${namecheapUrl}${domain.URL}" target="_blank" class="available">${domain.URL}</a> -
+                              <a href="${namecheapUrl}${domain.URL}" target="_blank" class="available">${domain.URL}</a><span class="hyphen"> - </span>
                               <a href="${googleSearchURL}${domain.searchTerm}" target="_blank" class="info">${domain.searchTerm}</a>
                               <span class="available-as-of">as of ${domain.as_of}</span>
                             </div>`
@@ -56,7 +56,7 @@ const getTwitterDomains = () => new Promise((resolve, reject) => {
         let twitterSearchURL = `http://twitter.com/search?q=`
         if (domain.available) {
           twitterDomains += `<div class="col-xs-12 content ${lastItem}">
-                              <a href="${namecheapUrl}${domain.URL}" target="_blank" class="available">${domain.URL}</a> -
+                              <a href="${namecheapUrl}${domain.URL}" target="_blank" class="available">${domain.URL}</a><span class="hyphen"> - </span>
                               <a href="${twitterSearchURL}${domain.query}" target="_blank" class="info">${domain.searchTerm}</a>
                               <span class="available-as-of">as of ${domain.as_of}</span>
                             </div>`
