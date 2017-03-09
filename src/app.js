@@ -24,14 +24,15 @@ const getGoogleDomains = () => new Promise((resolve, reject) => {
         if (idx === domains.length - 1) {
           lastItem = `last-item`
         }
-        dateGenerated = `<h2>Google trending searches as of ${domain.as_of}</h2>`
+        dateGenerated = `<h2>Google trending searches</h2>`
         let namecheapUrl = `https://www.namecheap.com/domains/registration/results.aspx?domain=`
         let googleSearchURL = `https://www.google.com/#safe=strict&q=`
         if (domain.available) {
           googleDomains += `<div class="col-xs-12 content ${lastItem}"><a href="${namecheapUrl}${domain.URL}" target="_blank" class="available">${domain.URL}</a> - <a href="${googleSearchURL}${domain.searchTerm}" target="_blank">${domain.searchTerm}</a></div>`
-        } else {
-          googleDomains += `<div class="col-xs-12 content ${lastItem}"><a href="${namecheapUrl}${domain.URL}" target="_blank" class="unavailable">${domain.URL}</a> - <a href="${googleSearchURL}${domain.searchTerm}" target="_blank">${domain.searchTerm}</a></div>`
         }
+        // else {
+        //   googleDomains += `<div class="col-xs-12 content ${lastItem}"><a href="${namecheapUrl}${domain.URL}" target="_blank" class="unavailable">${domain.URL}</a> - <a href="${googleSearchURL}${domain.searchTerm}" target="_blank">${domain.searchTerm}</a></div>`
+        // }
       }
     })
     googleDomains += `</div>`
@@ -50,14 +51,15 @@ const getTwitterDomains = () => new Promise((resolve, reject) => {
         if (idx === domains.length - 1) {
           lastItem = `last-item`
         }
-        dateGenerated = `<h2>Twitter trending terms as of ${domain.as_of}</h2>`
+        dateGenerated = `<h2>Twitter trending terms</h2>`
         let namecheapUrl = `https://www.namecheap.com/domains/registration/results.aspx?domain=`
         let twitterSearchURL = `http://twitter.com/search?q=`
         if (domain.available) {
           twitterDomains += `<div class="col-xs-12 content ${lastItem}"><a href="${namecheapUrl}${domain.URL}" target="_blank" class="available">${domain.URL}</a> - <a href="${twitterSearchURL}${domain.query}" target="_blank">${domain.searchTerm}</a></div>`
-        } else {
-          twitterDomains += `<div class="col-xs-12 content ${lastItem}"><a href="${namecheapUrl}${domain.URL}" target="_blank" class="unavailable">${domain.URL}</a> - <a href="${twitterSearchURL}${domain.query}" target="_blank">${domain.searchTerm}</a></div>`
         }
+        // else {
+        //   twitterDomains += `<div class="col-xs-12 content ${lastItem}"><a href="${namecheapUrl}${domain.URL}" target="_blank" class="unavailable">${domain.URL}</a> - <a href="${twitterSearchURL}${domain.query}" target="_blank">${domain.searchTerm}</a></div>`
+        // }
       }
     })
     twitterDomains += `</div>`

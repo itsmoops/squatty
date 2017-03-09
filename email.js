@@ -7,13 +7,6 @@ const jsonfile = require('jsonfile')
 const filePath = './data/google-trending-domains.json'
 const tld = `com`
 
-// creates json file, needs file path and data
-const writeFile = (filePath, data) => {
-  jsonfile.writeFile(filePath, data, { spaces: 2 }, (err) => {
-    if (err) console.error(err)
-  })
-}
-
 // gets rid of spaces and unwanted characters
 const sanitizeDomains = (searchTerm) => {
   let sanitized = `${searchTerm.toLowerCase().replace(/ /g, "").replace(/\./g, "")}.${tld}`
@@ -138,7 +131,6 @@ const sendEmail = () => {
 
 const emailJob = () => {
   getDomains().then(domains => {
-    writeFile(filePath, domains)
     setTimeout(() => {
       sendEmail()
     }, 1000)

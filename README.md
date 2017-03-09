@@ -11,3 +11,8 @@
 Google trending terms gives back 20 domains at a time. 600 hits divided by 20 gives us 30 batch runs a day to check which of the 20 is available
 
 1440/30 = 48 - meaning we could check the availability of 20 trending google terms every 48 minutes.
+
+
+mongodb sandbox offeres 496mb of storage
+5 letter combination file with 11 million rows was 178 mb
+just clear out the database each month

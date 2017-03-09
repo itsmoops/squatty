@@ -2,20 +2,32 @@ const express = require('express')
 const fs = require('fs')
 const path = require('path')
 const request = require("request")
+const _ = require('lodash')
 const moment = require('moment')
 const whois = require('whois-api')
-const jsonfile = require('jsonfile')
-const nodemailer = require('nodemailer')
-const schedule = require('node-schedule')
-const config = require('./data/twitter-config')
+const twitterConfig = require('./data/twitter-config')
 const Twitter = require('twitter-node-client').Twitter
+
+// initial firebase DB setup
+const firebaseConfig = require('./data/firebase-config')
+const firebase = require('firebase')
+const firebaseApp = firebase.initializeApp(firebaseConfig)
+const firebaseDB = firebase.database()
 
 const tld = `com`
 
+// set up app
 const app = express()
 app.set('port', process.env.PORT || 8080)
 app.set('json spaces', 2)
 app.use(express.static(path.join(__dirname, '/src')))
+
+// add firebase database to app for use in routes
+app.use((request, response, next) => {
+  request.firebase = firebaseDB
+  response.firebase = firebaseDB
+  next()
+})
 
 app.get('/', (request, response) => {
   response.render('pages/index')
@@ -25,19 +37,14 @@ app.listen(app.get('port'), () => {
   console.log('Node app is running on port', app.get('port'))
 })
 
-// creates json file, needs file path and data
-const writeFile = (filePath, data) => {
-  jsonfile.writeFile(filePath, data, { spaces: 2 }, (err) => {
-    if (err) console.error(err)
-  })
-}
-
 // gets rid of spaces and unwanted characters
 const sanitizeDomains = (searchTerm) => {
   let sanitized = `${searchTerm.toLowerCase().replace(/ /g, "").replace(/\./g, "").replace(/\#/g, "").replace(/\_/g, "")}.${tld}`
   return sanitized
 }
 
+
+// Get trending Google Searches
 const getTrendingGoogleSearchDomains = () => new Promise((resolve, reject) => {
   const googleTrendsURL = `http://hawttrends.appspot.com/api/terms/`
   const domainArray = []
@@ -48,8 +55,7 @@ const getTrendingGoogleSearchDomains = () => new Promise((resolve, reject) => {
         let sanitizedDomain = sanitizeDomains(searchTerm)
         domainArray.push({
           URL: sanitizedDomain,
-          searchTerm: searchTerm,
-          source: "google"
+          searchTerm: searchTerm
         })
         if (idx === (data[1].length - 1)) {
           resolve(domainArray)
@@ -59,9 +65,10 @@ const getTrendingGoogleSearchDomains = () => new Promise((resolve, reject) => {
   })
 })
 
-let twitter = new Twitter(config)
+const twitter = new Twitter(twitterConfig)
 const error = (err, response, body) => console.log('ERROR [%s]', err)
 
+// Get trending Twitter terms
 const getTrendingTwitterDomains = () => new Promise((resolve, reject) => {
   // U.S. Country Code - 1 is worldwide
   const countryCode = {
@@ -77,8 +84,7 @@ const getTrendingTwitterDomains = () => new Promise((resolve, reject) => {
           URL: sanitizedDomain,
           searchTerm: searchTerm.name,
           query: searchTerm.query,
-          tweet_volume: searchTerm.tweet_volume,
-          source: "twitter"
+          tweet_volume: searchTerm.tweet_volume
         })
         if (idx === (data[0].trends.length - 1)) {
           resolve(domainArray)
@@ -88,100 +94,93 @@ const getTrendingTwitterDomains = () => new Promise((resolve, reject) => {
   })
 })
 
-// Requests whether a URL has been taken from WhoAPI
-const getDomains = (source) => new Promise((resolve, reject) => {
+// Only return new domains that haven't been checked already - this limits our WHO API calls
+// TODO: if it's been more than a month, through out the database and start over
+const filterDomains = (domains, source, firebase) => new Promise((resolve, reject) => {
+  firebase.ref(`${source}Domains/`).once('value').then((data) => {
+    const newDomains = domains
+    const firebaseDomains = data.val()
+    let filteredDomains = []
+    newDomains.map((newDomain) => {
+       let exists = _.filter(firebaseDomains, { URL: newDomain.URL })
+       if (exists.length === 0) {
+         filteredDomains.push(newDomain)
+       }
+    })
+    resolve(filteredDomains)
+  })
+})
+
+// Checks whether or not a URL has been taken from WhoAPI
+const checkDomainAvailability = (domains) => new Promise((resolve, reject) => {
   const whoAPIKey = `b27983e0f59374a7c031a487727f93ae`
-  if (source === "google") {
-    getTrendingGoogleSearchDomains()
-    .then(domains => {
-      const domainArray = []
-      var counter = 0
-      domains.reverse().forEach((domain, idx) => {
-        const domainURL = `http://api.whoapi.com/?apikey=${whoAPIKey}&r=taken&domain=${domain.URL}`
-        request(domainURL, (err, res, body) => {
-            counter++
-            domain.as_of = moment().format('MM/DD/YYYY h:mma')
-            if (!JSON.parse(body).taken) {
-              domain.available = true
-            } else {
-              domain.available = false
-            }
-            domainArray.push(domain)
-            if (counter === domains.length) {
-              resolve(domainArray)
-            }
-        })
+  const domainArray = []
+  var counter = 0
+  if (domains.length > 0) {
+    domains.reverse().forEach((domain, idx) => {
+      const domainURL = `http://api.whoapi.com/?apikey=${whoAPIKey}&r=taken&domain=${domain.URL}`
+      request(domainURL, (err, res, body) => {
+          counter++
+          domain.as_of = moment().format('MM/DD/YYYY h:mma')
+          if (!JSON.parse(body).taken) {
+            domain.available = true
+          } else {
+            domain.available = false
+          }
+          domainArray.push(domain)
+          console.log(`Who API hit: ${counter} times`)
+          if (counter === domains.length) {
+            resolve(domainArray)
+          }
       })
     })
   } else {
-    getTrendingTwitterDomains()
-    .then(domains => {
-      const domainArray = []
-      var counter = 0
-      domains.reverse().forEach((domain, idx) => {
-        const domainURL = `http://api.whoapi.com/?apikey=${whoAPIKey}&r=taken&domain=${domain.URL}`
-        request(domainURL, (err, res, body) => {
-            counter++
-            domain.as_of = moment().format('MM/DD/YYYY h:mma')
-            if (!JSON.parse(body).taken) {
-              domain.available = true
-            } else {
-              domain.available = false
-            }
-            domainArray.push(domain)
-            if (counter === domains.length) {
-              resolve(domainArray)
-            }
-        })
-      })
-    })
+    console.log(`Nothing changed. Who API hit: ${counter} times`)
+    resolve(domainArray)
   }
 })
 
-// checks to see if a domains.json file already exists
-const fileExists = filePath => new Promise((resolve, reject) => {
-  fs.stat(filePath, (err, stat) => {
-    if (!err) {
-      resolve(true)
-    } else if (err && err.code === 'ENOENT') {
-      resolve(false)
+// Merges existing firebase data with new domains and saves them to the firebase DB
+const updateDatabase = (domains, source, firebase) => new Promise((resolve, reject) => {
+  firebase.ref(`${source}Domains/`).once('value').then((data) => {
+    const newDomains = domains
+    const firebaseDomains = data.val()
+    let mergedDomains = []
+    if (firebaseDomains) {
+      mergedDomains = firebaseDomains.concat(newDomains)
     } else {
-      reject(err)
+      mergedDomains = newDomains
     }
+    firebase.ref(`${source}Domains/`).set(mergedDomains)
+    resolve(mergedDomains)
   })
 })
 
+// Get the trending items -> filter out only new domains -> check WHO API availability -> update firebase with merged data
+const processDomains = (source, firebase) => new Promise((resolve, reject) => {
+  if (source === "google") {
+    getTrendingGoogleSearchDomains()
+    .then(domains => filterDomains(domains, source, firebase))
+    .then(domains => checkDomainAvailability(domains))
+    .then(domains => resolve(updateDatabase(domains, source, firebase)))
+  } else if (source === "twitter") {
+    getTrendingTwitterDomains()
+    .then(domains => filterDomains(domains, source, firebase))
+    .then(domains => checkDomainAvailability(domains))
+    .then(domains => resolve(updateDatabase(domains, source, firebase)))
+  }
+})
+
+// Google API route
 app.get('/google-trending-domains', (request, response) => {
-  const filePath = './data/google-trending-domains.json'
-
-  // for the time being, let's just do a fresh lookup every page load
-  getDomains("google").then(domains => {
-    writeFile(filePath, domains)
+  processDomains("google", request.firebase).then(domains => {
     response.json(domains)
   })
 })
 
+// Twitter API route
 app.get('/twitter-trending-domains', (request, response) => {
-  const filePath = './data/twitter-trending-domains.json'
-
-  // for the time being, let's just do a fresh lookup every page load
-  getDomains("twitter").then(domains => {
-    writeFile(filePath, domains)
+  processDomains("twitter", request.firebase).then(domains => {
     response.json(domains)
   })
 })
-
-// check if file exists
-// fileExists(filePath).then(exists => {
-//   if (exists) {
-//     // if the json file already exists, just serve it up
-//     const domains = require(filePath)
-//     response.json(domains)
-//   } else {
-//     // if it doesn't exist get the domains, then create a file
-//     getDomains().then(domains => {
-//       writeFile(filePath, domains)
-//       response.json(domains)
-//     })
-//   }
-// })
