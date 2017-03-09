@@ -150,6 +150,9 @@ const updateDatabase = (domains, source, firebase) => new Promise((resolve, reje
       mergedDomains = firebaseDomains.concat(newDomains)
     } else {
       mergedDomains = newDomains
+      mergedDomains.unshift({
+        database_created: moment().format('MM/DD/YYYY h:mma')
+      })
     }
     firebase.ref(`${source}Domains/`).set(mergedDomains)
     resolve(mergedDomains)
