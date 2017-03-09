@@ -187,14 +187,26 @@ const processDomains = (source, firebase) => new Promise((resolve, reject) => {
 // Google API route
 app.get('/google-trending-domains', (request, response) => {
   processDomains("google", request.firebase).then(domains => {
-    response.json(domains)
+    let availableDomains = []
+    domains.map((domain) => {
+      if (domain.available) {
+        availableDomains.push(domain)
+      }
+    })
+    response.json(availableDomains)
   })
 })
 
 // Twitter API route
 app.get('/twitter-trending-domains', (request, response) => {
   processDomains("twitter", request.firebase).then(domains => {
-    response.json(domains)
+    let availableDomains = []
+    domains.map((domain) => {
+      if (domain.available) {
+        availableDomains.push(domain)
+      }
+    })
+    response.json(availableDomains)
   })
 })
 

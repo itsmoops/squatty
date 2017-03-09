@@ -16,57 +16,57 @@ const fetchUrls = endpoint => new Promise((resolve, reject) => {
 
 const getGoogleDomains = () => new Promise((resolve, reject) => {
   fetchUrls('/google-trending-domains').then((domains) => {
-    let googleDomains = `<div id="google-trending-domains" class="domain-container">`
-    let dateGenerated = ``
+    let googleDomains = `<div id="google-trending-domains" class="domain-container"><h2>Available trending Google search domains</h2>`
     var lastItem = ``
-    domains.forEach((domain, idx) => {
+    // sort by most recent trending items on top
+    let sortedDomains = domains.sort((a, b) => a.as_of < b.as_of ? -1 : 1)
+    sortedDomains.forEach((domain, idx) => {
       if (idx > 0) {
         if (idx === domains.length - 1) {
           lastItem = `last-item`
         }
-        dateGenerated = `<h2>Available trending Google search domains</h2>`
         let namecheapUrl = `https://www.namecheap.com/domains/registration/results.aspx?domain=`
         let googleSearchURL = `https://www.google.com/#safe=strict&q=`
         if (domain.available) {
-          googleDomains += `<div class="col-xs-12 content ${lastItem}"><a href="${namecheapUrl}${domain.URL}" target="_blank" class="available">${domain.URL}</a> - <a href="${googleSearchURL}${domain.searchTerm}" target="_blank">${domain.searchTerm}</a></div>`
+          googleDomains += `<div class="col-xs-12 content ${lastItem}">
+                              <a href="${namecheapUrl}${domain.URL}" target="_blank" class="available">${domain.URL}</a> -
+                              <a href="${googleSearchURL}${domain.searchTerm}" target="_blank" class="info">${domain.searchTerm}</a>
+                              <span class="available-as-of">as of ${domain.as_of}</span>
+                            </div>`
         }
-        // else {
-        //   googleDomains += `<div class="col-xs-12 content ${lastItem}"><a href="${namecheapUrl}${domain.URL}" target="_blank" class="unavailable">${domain.URL}</a> - <a href="${googleSearchURL}${domain.searchTerm}" target="_blank">${domain.searchTerm}</a></div>`
-        // }
       }
     })
     googleDomains += `</div>`
-    $('.squatty-container').append(dateGenerated)
-    $('.squatty-container').append(googleDomains)
+    resolve($('.squatty-container').append(googleDomains))
   })
 })
 
 const getTwitterDomains = () => new Promise((resolve, reject) => {
   fetchUrls('/twitter-trending-domains').then((domains) => {
-    let twitterDomains = `<div id="twitter-trending-domains">`
-    let dateGenerated = ``
+    let twitterDomains = `<div id="twitter-trending-domains"><h2>Available trending Twitter term domains</h2>`
     var lastItem = ``
-    domains.forEach((domain, idx) => {
+    // sort by most recent trending items on top
+    let sortedDomains = domains.sort((a, b) => a.as_of < b.as_of ? -1 : 1)
+    sortedDomains.forEach((domain, idx) => {
       if (idx > 0) {
         if (idx === domains.length - 1) {
           lastItem = `last-item`
         }
-        dateGenerated = `<h2>Available trending Twitter term domains</h2>`
         let namecheapUrl = `https://www.namecheap.com/domains/registration/results.aspx?domain=`
         let twitterSearchURL = `http://twitter.com/search?q=`
         if (domain.available) {
-          twitterDomains += `<div class="col-xs-12 content ${lastItem}"><a href="${namecheapUrl}${domain.URL}" target="_blank" class="available">${domain.URL}</a> - <a href="${twitterSearchURL}${domain.query}" target="_blank">${domain.searchTerm}</a></div>`
+          twitterDomains += `<div class="col-xs-12 content ${lastItem}">
+                              <a href="${namecheapUrl}${domain.URL}" target="_blank" class="available">${domain.URL}</a> -
+                              <a href="${twitterSearchURL}${domain.query}" target="_blank" class="info">${domain.searchTerm}</a>
+                              <span class="available-as-of">as of ${domain.as_of}</span>
+                            </div>`
         }
-        // else {
-        //   twitterDomains += `<div class="col-xs-12 content ${lastItem}"><a href="${namecheapUrl}${domain.URL}" target="_blank" class="unavailable">${domain.URL}</a> - <a href="${twitterSearchURL}${domain.query}" target="_blank">${domain.searchTerm}</a></div>`
-        // }
       }
     })
     twitterDomains += `</div>`
-    $('.squatty-container').append(dateGenerated)
-    $('.squatty-container').append(twitterDomains)
+    resolve($('.squatty-container').append(twitterDomains))
   })
 })
 
 getGoogleDomains()
-.then(getTwitterDomains())
+.then(() => {  getTwitterDomains() })

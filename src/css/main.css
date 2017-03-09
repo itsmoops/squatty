@@ -8,12 +8,11 @@ html, body {
 
 h1 {
   font-size: 50px;
-  padding-left: 15px;
+  padding-left: 20px;
 }
 
 h2 {
   padding-left: 15px;
-  text-decoration: underline;
 }
 
 select {
@@ -40,6 +39,16 @@ a:visited {
 a:focus {
   text-decoration: none;
   color: #9ea39f;
+}
+
+.domain-container {
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+.available-as-of {
+  color: #ff7896;
+  font-size: .6em;
 }
 
 .last-item {
@@ -96,12 +105,26 @@ a:focus {
   .content {
     font-size: 15px;
   }
+  .available-as-of {
+    display: block;
+    font-size: .9em;
+    margin-bottom: 5px;
+  }
+  .info {
+    display: block;
+  }
 }
 
 /* s */
 @media(min-width:768px) {
   .content {
     font-size: 15px;
+  }
+  .available-as-of {
+    display: inline;
+  }
+  h2 {
+    text-decoration: underline;
   }
 }
 
@@ -110,11 +133,23 @@ a:focus {
   .content {
     font-size: 30px;
   }
+  .available-as-of {
+    display: block;
+  }
+  .info {
+    display: block;
+  }
 }
 
 /* lg */
 @media(min-width:1200px) {
   .content {
     font-size: 35px;
+  }
+  .available-as-of {
+    display: inline;
+  }
+  .info {
+    display: inline;
   }
 }
