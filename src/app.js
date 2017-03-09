@@ -24,7 +24,7 @@ const getGoogleDomains = () => new Promise((resolve, reject) => {
         if (idx === domains.length - 1) {
           lastItem = `last-item`
         }
-        dateGenerated = `<h2>Google trending searches</h2>`
+        dateGenerated = `<h2>Available trending Google search domains</h2>`
         let namecheapUrl = `https://www.namecheap.com/domains/registration/results.aspx?domain=`
         let googleSearchURL = `https://www.google.com/#safe=strict&q=`
         if (domain.available) {
@@ -51,7 +51,7 @@ const getTwitterDomains = () => new Promise((resolve, reject) => {
         if (idx === domains.length - 1) {
           lastItem = `last-item`
         }
-        dateGenerated = `<h2>Twitter trending terms</h2>`
+        dateGenerated = `<h2>Available trending Twitter term domains</h2>`
         let namecheapUrl = `https://www.namecheap.com/domains/registration/results.aspx?domain=`
         let twitterSearchURL = `http://twitter.com/search?q=`
         if (domain.available) {

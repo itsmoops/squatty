@@ -59,19 +59,19 @@ a:focus {
 }
 
 .available {
-  color: #55c16a;
+  color: #79ffb5;
 }
 
 .available:hover {
-  color: #3d8c4c;
+  color: #54b37e;
 }
 
 .available:visited {
-  color: #3d8c4c;
+  color: #54b37e;
 }
 
 .available:focus {
-  color: #3d8c4c;
+  color: #54b37e;
 }
 
 .unavailable {

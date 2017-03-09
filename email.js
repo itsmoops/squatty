@@ -79,7 +79,7 @@ let transporter = nodemailer.createTransport({
 const sendEmail = () => {
   const domains = require(filePath)
   let linkContainerStyle = `width:100%;padding-left:15px;font-size:15px;`
-  let availableStyle = `color:#55c16a;`
+  let availableStyle = `color:#79ffb5;`
   let unavailableStyle = `color:#c94646;`
   let domainLinks = ``
   domains.forEach((domain, idx) => {
@@ -91,11 +91,12 @@ const sendEmail = () => {
         domainLinks += `<div style="${linkContainerStyle}">
                           <a style="${availableStyle}" href=https://www.namecheap.com/domains/registration/results.aspx?domain=${domain.URL}>${domain.URL}</a>
                         </div>`
-      } else {
-        domainLinks += `<div style="${linkContainerStyle}">
-                          <a style="${unavailableStyle}" href=https://www.namecheap.com/domains/registration/results.aspx?domain=${domain.URL}>${domain.URL}</a>
-                        </div>`
       }
+      // else {
+      //   domainLinks += `<div style="${linkContainerStyle}">
+      //                     <a style="${unavailableStyle}" href=https://www.namecheap.com/domains/registration/results.aspx?domain=${domain.URL}>${domain.URL}</a>
+      //                   </div>`
+      // }
     }
   })
   // setup email data with unicode symbols
@@ -137,27 +138,30 @@ const emailJob = () => {
   })
 }
 
-let rule1 = new schedule.RecurrenceRule();
-rule1.hour = 9;
+let rule1 = new schedule.RecurrenceRule()
+rule1.hour = 9
+rule1.minute = 0
 schedule.scheduleJob(`9am`, rule1, () => {
-  console.log('9 oclock');
-});
+  console.log('9 oclock')
+})
 
 let rule2 = new schedule.RecurrenceRule();
-rule2.hour = 12;
-rule2.minute = 30;
+rule2.hour = 12
+rule2.minute = 30
 schedule.scheduleJob(`12:30pm`, rule2, () => {
-  console.log('12:30 oclock');
-});
+  console.log('12:30 oclock')
+})
 
 let rule3 = new schedule.RecurrenceRule();
-rule3.hour = 16;
+rule3.hour = 16
+rule3.minute = 0
 schedule.scheduleJob(`4pm`, rule3, () => {
-  console.log('4 oclock');
-});
+  console.log('4 oclock')
+})
 
 let rule4 = new schedule.RecurrenceRule();
-rule4.hour = 19;
+rule4.hour = 19
+rule4.minute = 0
 schedule.scheduleJob(`7pm`, rule4, () => {
-  console.log('7 oclock');
-});
+  console.log('7 oclock')
+})

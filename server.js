@@ -144,14 +144,24 @@ const checkDomainAvailability = (domains) => new Promise((resolve, reject) => {
 const updateDatabase = (domains, source, firebase) => new Promise((resolve, reject) => {
   firebase.ref(`${source}Domains/`).once('value').then((data) => {
     const newDomains = domains
-    const firebaseDomains = data.val()
+    let firebaseDomains = data.val()
     let mergedDomains = []
+
+    // delete database and start over if its been a month
+    const today = moment().utc()
+    const databaseCreated = firebaseDomains && moment.utc(firebaseDomains[0].database_created)
+    if (firebaseDomains && today.isAfter(databaseCreated, 'month')) {
+      firebase.ref(`${source}Domains/`).remove()
+      firebaseDomains = null
+    }
+
     if (firebaseDomains) {
       mergedDomains = firebaseDomains.concat(newDomains)
+      mergedDomains[0].database_created = moment().format()
     } else {
       mergedDomains = newDomains
       mergedDomains.unshift({
-        database_created: moment().format('MM/DD/YYYY h:mma')
+        database_created: moment().format()
       })
     }
     firebase.ref(`${source}Domains/`).set(mergedDomains)
@@ -187,3 +197,5 @@ app.get('/twitter-trending-domains', (request, response) => {
     response.json(domains)
   })
 })
+
+// TODO: MODULE EXPORTS FOR EMAIL SERVER JOB GO HERE
