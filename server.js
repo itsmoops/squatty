@@ -152,6 +152,7 @@ const updateDatabase = (domains, source, firebase) => new Promise((resolve, reje
       firebase.ref(`${source}Domains/`).remove()
       firebaseDomains = null
     }
+    
     if (firebaseDomains) {
       mergedDomains = firebaseDomains.concat(newDomains)
     } else {
