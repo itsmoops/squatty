@@ -65,15 +65,26 @@ const getTwitterDomains = () => new Promise((resolve, reject) => {
   })
 })
 
-var resp = prompt(`Hey, who are you?`)
-let respFormat = resp.charAt(0).toUpperCase() + resp.slice(1).toLowerCase()
-if (resp.toLowerCase() === `eric` || resp.toLowerCase() === `karl`) {
-  $('.squatty-container').append(`<h1 id="response" style="text-align:center;text-align: center;font-size: 90px;margin-top:20%;">Oh hey ${respFormat}, enjoy the site!<h1>`)
+var user = localStorage.getItem('user')
+if (user) {
+  $('.squatty-container').append(`<h1 id="response" style="text-align:center;text-align: center;font-size: 90px;margin-top:20%;">Welcome back ${user}!<h1>`)
   setTimeout(() => {
     $('#response').fadeOut()
     getGoogleDomains()
     .then(() => {  getTwitterDomains() })
   }, 2000)
 } else {
-  $('.squatty-container').append(`<h1 id="response" style="text-align:center;text-align: center;font-size: 90px;margin-top:20%;">Fuck you ${respFormat}.<h1>`)
+  var resp = prompt(`Hey, who are you?`)
+  let respFormat = resp.charAt(0).toUpperCase() + resp.slice(1).toLowerCase()
+  if (resp.toLowerCase() === `eric` || resp.toLowerCase() === `karl`) {
+    localStorage.setItem('user', respFormat)
+    $('.squatty-container').append(`<h1 id="response" style="text-align:center;text-align: center;font-size: 90px;margin-top:20%;">Oh hey ${respFormat}, enjoy the site!<h1>`)
+    setTimeout(() => {
+      $('#response').fadeOut()
+      getGoogleDomains()
+      .then(() => {  getTwitterDomains() })
+    }, 2000)
+  } else {
+    $('.squatty-container').append(`<h1 id="response" style="text-align:center;text-align: center;font-size: 90px;margin-top:20%;">Fuck you ${respFormat}.<h1>`)
+  }
 }
