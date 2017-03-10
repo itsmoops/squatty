@@ -47,7 +47,7 @@ const sendEmail = (googleDomains, twitterDomains) => {
       domainLinks += `<div style="${linkContainerStyle}">
                         <a style="${availableStyle}" href=https://www.namecheap.com/domains/registration/results.aspx?domain=${domain.URL}>${domain.URL}</a>
                       </div>`
-    } else if ((idx === googleDomains.length -1) && googleCount === 0) {
+    } else if ((idx === googleDomains.length - 1) && googleCount === 0) {
       domainLinks += `<div style="${linkContainerStyle}">
                         <span style="${unavailableStyle}">No new domains yet for today</span>
                       </div>`
@@ -69,12 +69,12 @@ const sendEmail = (googleDomains, twitterDomains) => {
       domainLinks += `<div style="${linkContainerStyle}">
                         <a style="${availableStyle}" href=https://www.namecheap.com/domains/registration/results.aspx?domain=${domain.URL}>${domain.URL}</a>
                       </div>`
-    } else if ((idx === twitterDomains.length -1) && twitterCount === 0) {
+    } else if ((idx === twitterDomains.length - 1) && twitterCount === 0) {
       domainLinks += `<div style="${linkContainerStyle}">
                         <span style="${unavailableStyle}">No new domains yet for today</span>
                       </div>`
     }
-    if (idx === twitterDomains.length -1) {
+    if (idx === twitterDomains.length - 1) {
       domainLinks += `</div>`
     }
   })
@@ -82,9 +82,9 @@ const sendEmail = (googleDomains, twitterDomains) => {
   // setup email data with unicode symbols
   let containerStyle = `width:100%;height:100%;background-color:#222;color:white;font-family:Arial;padding-bottom:10px !important;`
   let centeredTextStyle = `text-align:center;`
-  let mailBody = `<html>
+  let mailBody = `<html style="width:100%;height:100%;">
                     <body style="${containerStyle}">
-                      <div>
+                      <div style="width:100%;height:100%;">
                         <h1 style="${centeredTextStyle} padding-top:10px;">
                           Squatty Domains
                         </h1>
