@@ -75,7 +75,7 @@ const sendEmail = (googleDomains, twitterDomains) => {
                         Squatty Domains
                       </h1>
                       <h2 style="${centeredTextStyle} font-size: 20px;">
-                        ${moment().format('MMMM Do YYYY')}
+                        ${moment().format('MMMM Do YYYY h:mma')}
                       </h2>
                       <div>
                         ${domainLinks}
@@ -111,7 +111,7 @@ const emailJob = () => {
 
 let rule = new schedule.RecurrenceRule()
 rule.hour = 19
-rule.minute = 47
+rule.minute = 51
 schedule.scheduleJob(`test`, rule, () => {
   emailJob()
 })
