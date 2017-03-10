@@ -17,7 +17,7 @@ const fetchUrls = endpoint => new Promise((resolve, reject) => {
 
 const getGoogleDomains = () => new Promise((resolve, reject) => {
   fetchUrls('/google-trending-domains').then((domains) => {
-    let googleDomains = `<div id="google-trending-domains" class="domain-container"><h2>Available trending Google search domains</h2>`
+    let googleDomains = `<h1>SQUATTY</h1><div id="google-trending-domains" class="domain-container"><h2>Available trending Google search domains</h2>`
     var lastItem = ``
     // sort by most recent trending items on top
     let sortedDomains = domains.sort((a, b) => a.as_of < b.as_of ? 1 : -1)
@@ -65,5 +65,15 @@ const getTwitterDomains = () => new Promise((resolve, reject) => {
   })
 })
 
-getGoogleDomains()
-.then(() => {  getTwitterDomains() })
+var resp = prompt(`Hey, who are you?`)
+let respFormat = resp.charAt(0).toUpperCase() + resp.slice(1).toLowerCase()
+if (resp.toLowerCase() === `eric` || resp.toLowerCase() === `karl`) {
+  $('.squatty-container').append(`<h1 id="response" style="text-align:center;text-align: center;font-size: 90px;margin-top:20%;">Oh hey ${respFormat}, enjoy the site!<h1>`)
+  setTimeout(() => {
+    $('#response').fadeOut()
+    getGoogleDomains()
+    .then(() => {  getTwitterDomains() })
+  }, 2000)
+} else {
+  $('.squatty-container').append(`<h1 id="response" style="text-align:center;text-align: center;font-size: 90px;margin-top:20%;">Fuck you ${respFormat}.<h1>`)
+}
