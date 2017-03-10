@@ -22,19 +22,17 @@ const getGoogleDomains = () => new Promise((resolve, reject) => {
     // sort by most recent trending items on top
     let sortedDomains = domains.sort((a, b) => a.as_of < b.as_of ? 1 : -1)
     sortedDomains.forEach((domain, idx) => {
-      if (idx > 0) {
-        if (idx === domains.length - 1) {
-          lastItem = `last-item`
-        }
-        let namecheapUrl = `https://www.namecheap.com/domains/registration/results.aspx?domain=`
-        let googleSearchURL = `https://www.google.com/#safe=strict&q=`
-        if (domain.available) {
-          googleDomains += `<div class="col-xs-12 content ${lastItem}">
-                              <a href="${namecheapUrl}${domain.URL}" target="_blank" class="available">${domain.URL}</a><span class="hyphen"> - </span>
-                              <a href="${googleSearchURL}${domain.searchTerm}" target="_blank" class="info">${domain.searchTerm}</a>
-                              <span class="available-as-of">as of ${moment(domain.as_of).format('MM/DD/YYYY h:mma')}</span>
-                            </div>`
-        }
+      if (idx === domains.length - 1) {
+        lastItem = `last-item`
+      }
+      let namecheapUrl = `https://www.namecheap.com/domains/registration/results.aspx?domain=`
+      let googleSearchURL = `https://www.google.com/#safe=strict&q=`
+      if (domain.available) {
+        googleDomains += `<div class="col-xs-12 content ${lastItem}">
+                            <a href="${namecheapUrl}${domain.URL}" target="_blank" class="available">${domain.URL}</a><span class="hyphen"> - </span>
+                            <a href="${googleSearchURL}${domain.searchTerm}" target="_blank" class="info">${domain.searchTerm}</a>
+                            <span class="available-as-of">as of ${moment(domain.as_of).format('MM/DD/YYYY h:mma')}</span>
+                          </div>`
       }
     })
     googleDomains += `</div>`
@@ -49,19 +47,17 @@ const getTwitterDomains = () => new Promise((resolve, reject) => {
     // sort by most recent trending items on top
     let sortedDomains = domains.sort((a, b) => a.as_of < b.as_of ? 1 : -1)
     sortedDomains.forEach((domain, idx) => {
-      if (idx > 0) {
-        if (idx === domains.length - 1) {
-          lastItem = `last-item`
-        }
-        let namecheapUrl = `https://www.namecheap.com/domains/registration/results.aspx?domain=`
-        let twitterSearchURL = `http://twitter.com/search?q=`
-        if (domain.available) {
-          twitterDomains += `<div class="col-xs-12 content ${lastItem}">
-                              <a href="${namecheapUrl}${domain.URL}" target="_blank" class="available">${domain.URL}</a><span class="hyphen"> - </span>
-                              <a href="${twitterSearchURL}${domain.query}" target="_blank" class="info">${domain.searchTerm}</a>
-                              <span class="available-as-of">as of ${moment(domain.as_of).format('MM/DD/YYYY h:mma')}</span>
-                            </div>`
-        }
+      if (idx === domains.length - 1) {
+        lastItem = `last-item`
+      }
+      let namecheapUrl = `https://www.namecheap.com/domains/registration/results.aspx?domain=`
+      let twitterSearchURL = `http://twitter.com/search?q=`
+      if (domain.available) {
+        twitterDomains += `<div class="col-xs-12 content ${lastItem}">
+                            <a href="${namecheapUrl}${domain.URL}" target="_blank" class="available">${domain.URL}</a><span class="hyphen"> - </span>
+                            <a href="${twitterSearchURL}${domain.query}" target="_blank" class="info">${domain.searchTerm}</a>
+                            <span class="available-as-of">as of ${moment(domain.as_of).format('MM/DD/YYYY h:mma')}</span>
+                          </div>`
       }
     })
     twitterDomains += `</div>`
