@@ -14,8 +14,6 @@ const firebase = require('firebase')
 const firebaseApp = firebase.initializeApp(firebaseConfig)
 const firebaseDB = firebase.database()
 
-const tld = `com`
-
 // set up app
 const app = express()
 app.set('port', process.env.PORT || 8080)
@@ -39,6 +37,7 @@ app.listen(app.get('port'), () => {
 
 // gets rid of spaces and unwanted characters
 const sanitizeDomains = (searchTerm) => {
+  const tld = `com`
   let sanitized = `${searchTerm.toLowerCase().replace(/ /g, "").replace(/\./g, "").replace(/\#/g, "").replace(/\_/g, "").replace(/\"/g, "").replace(/\'/g, "")}.${tld}`
   return sanitized
 }
@@ -65,11 +64,11 @@ const getTrendingGoogleSearchDomains = () => new Promise((resolve, reject) => {
   })
 })
 
-const twitter = new Twitter(twitterConfig)
 const error = (err, response, body) => console.log('ERROR [%s]', err)
 
 // Get trending Twitter terms
 const getTrendingTwitterDomains = () => new Promise((resolve, reject) => {
+  const twitter = new Twitter(twitterConfig)
   // U.S. Country Code - 1 is worldwide
   const countryCode = {
     id: 23424977
@@ -211,3 +210,13 @@ app.get('/twitter-trending-domains', (request, response) => {
 })
 
 // TODO: MODULE EXPORTS FOR EMAIL SERVER JOB GO HERE
+module.exports = {
+  processDomains: processDomains,
+  filterDomains: filterDomains,
+  checkDomainAvailability: checkDomainAvailability,
+  updateDatabase: updateDatabase,
+  getTrendingGoogleSearchDomains: getTrendingGoogleSearchDomains,
+  getTrendingTwitterDomains: getTrendingTwitterDomains,
+  sanitizeDomains: sanitizeDomains,
+  error: error
+}

@@ -19,7 +19,7 @@ const getGoogleDomains = () => new Promise((resolve, reject) => {
     let googleDomains = `<div id="google-trending-domains" class="domain-container"><h2>Available trending Google search domains</h2>`
     var lastItem = ``
     // sort by most recent trending items on top
-    let sortedDomains = domains.sort((a, b) => a.as_of < b.as_of ? -1 : 1)
+    let sortedDomains = domains.sort((a, b) => a.as_of < b.as_of ? 1 : -1)
     sortedDomains.forEach((domain, idx) => {
       if (idx > 0) {
         if (idx === domains.length - 1) {
@@ -46,7 +46,7 @@ const getTwitterDomains = () => new Promise((resolve, reject) => {
     let twitterDomains = `<div id="twitter-trending-domains"><h2>Available trending Twitter term domains</h2>`
     var lastItem = ``
     // sort by most recent trending items on top
-    let sortedDomains = domains.sort((a, b) => a.as_of < b.as_of ? -1 : 1)
+    let sortedDomains = domains.sort((a, b) => a.as_of < b.as_of ? 1 : -1)
     sortedDomains.forEach((domain, idx) => {
       if (idx > 0) {
         if (idx === domains.length - 1) {
