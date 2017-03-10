@@ -16,3 +16,10 @@ Google trending terms gives back 20 domains at a time. 600 hits divided by 20 gi
 mongodb sandbox offeres 496mb of storage
 5 letter combination file with 11 million rows was 178 mb
 just clear out the database each month
+
+
+
+TODO: look up most common dictionary words
+re-lookup URLS that have been searched before, but that were previously available - maybe after a week
+right before clearing out the database, add existing items to a historical firebase database endpoint
+add informational link to email

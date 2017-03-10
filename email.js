@@ -30,18 +30,26 @@ let transporter = nodemailer.createTransport({
 })
 
 const sendEmail = (googleDomains, twitterDomains) => {
-  let linkContainerStyle = `width:100%;padding-left:15px;font-size:15px;`
-  let availableStyle = `color:#79ffb5;`
+  let linkContainerStyle = `width:100%;padding-left:15px;font-size:15px;padding-bottom:2px;`
+  let availableStyle = `color:#79ffb5;text-decoration:none;`
+  let unavailableStyle = `color:#ff7896`
   let domainLinks = ``
-  let headerStyle = `padding-left:15px;`
+  let headerStyle = `padding-left:15px;text-decoration:none !important;`
+  let googleCount = 0
+  let twitterCount = 0
   googleDomains.forEach((domain, idx) => {
     if (idx === 0) {
       domainLinks += `<div><h3 style="${headerStyle}">Google domains</h3>`
     }
     // Only want to send links from the current day so it doesn't get super long
     if (moment(domain.as_of).isSame(moment().format(), 'day')) {
+      googleCount++
       domainLinks += `<div style="${linkContainerStyle}">
                         <a style="${availableStyle}" href=https://www.namecheap.com/domains/registration/results.aspx?domain=${domain.URL}>${domain.URL}</a>
+                      </div>`
+    } else if ((idx === googleDomains.length -1) && googleCount === 0) {
+      domainLinks += `<div style="${linkContainerStyle}">
+                        <span style="${unavailableStyle}">No new domains yet for today</span>
                       </div>`
     }
     if (idx === googleDomains.length -1) {
@@ -57,8 +65,13 @@ const sendEmail = (googleDomains, twitterDomains) => {
     }
     // Only want to send links from the current day so it doesn't get super long
     if (moment(domain.as_of).isSame(moment().format(), 'day')) {
+      twitterCount++
       domainLinks += `<div style="${linkContainerStyle}">
                         <a style="${availableStyle}" href=https://www.namecheap.com/domains/registration/results.aspx?domain=${domain.URL}>${domain.URL}</a>
+                      </div>`
+    } else if ((idx === twitterDomains.length -1) && twitterCount === 0) {
+      domainLinks += `<div style="${linkContainerStyle}">
+                        <span style="${unavailableStyle}">No new domains yet for today</span>
                       </div>`
     }
     if (idx === twitterDomains.length -1) {
@@ -67,20 +80,22 @@ const sendEmail = (googleDomains, twitterDomains) => {
   })
 
   // setup email data with unicode symbols
-  let containerStyle = `width:100%;height:100%;background-color:#222;color:white;font-family:Arial;`
+  let containerStyle = `width:100%;height:100%;background-color:#222;color:white;font-family:Arial;padding-bottom:10px !important;`
   let centeredTextStyle = `text-align:center;`
   let mailBody = `<html>
-                    <div style="${containerStyle}">
-                      <h1 style="${centeredTextStyle} padding-top:10px;">
-                        Squatty Domains
-                      </h1>
-                      <h2 style="${centeredTextStyle} font-size: 20px;">
-                        ${moment().format('MMMM Do YYYY h:mma')}
-                      </h2>
+                    <body style="${containerStyle}">
                       <div>
-                        ${domainLinks}
+                        <h1 style="${centeredTextStyle} padding-top:10px;">
+                          Squatty Domains
+                        </h1>
+                        <h2 style="${centeredTextStyle} font-size: 20px;">
+                          ${moment().format('MMMM Do YYYY h:mma')}
+                        </h2>
+                        <div>
+                          ${domainLinks}
+                        </div>
                       </div>
-                    </div>
+                    </body>
                   </html>`
   let mailOptions = {
       from: `"Squatty Domains" <squattydomains@gmail.com>`, // sender address
