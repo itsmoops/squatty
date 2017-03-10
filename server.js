@@ -1,5 +1,4 @@
 const express = require('express')
-const fs = require('fs')
 const path = require('path')
 const request = require("request")
 const _ = require('lodash')
@@ -120,7 +119,7 @@ const checkDomainAvailability = (domains) => new Promise((resolve, reject) => {
       const domainURL = `http://api.whoapi.com/?apikey=${whoAPIKey}&r=taken&domain=${domain.URL}`
       request(domainURL, (err, res, body) => {
           counter++
-          domain.as_of = moment().format('MM/DD/YYYY h:mma')
+          domain.as_of = moment().format()
           if (!JSON.parse(body).taken) {
             domain.available = true
           } else {
@@ -164,7 +163,13 @@ const updateDatabase = (domains, source, firebase) => new Promise((resolve, reje
       })
     }
     firebase.ref(`${source}Domains/`).set(mergedDomains)
-    resolve(mergedDomains)
+    let availableDomains = []
+    mergedDomains.map((domain) => {
+      if (domain.available) {
+        availableDomains.push(domain)
+      }
+    })
+    resolve(availableDomains)
   })
 })
 
@@ -186,26 +191,14 @@ const processDomains = (source, firebase) => new Promise((resolve, reject) => {
 // Google API route
 app.get('/google-trending-domains', (request, response) => {
   processDomains("google", request.firebase).then(domains => {
-    let availableDomains = []
-    domains.map((domain) => {
-      if (domain.available) {
-        availableDomains.push(domain)
-      }
-    })
-    response.json(availableDomains)
+    response.json(domains)
   })
 })
 
 // Twitter API route
 app.get('/twitter-trending-domains', (request, response) => {
   processDomains("twitter", request.firebase).then(domains => {
-    let availableDomains = []
-    domains.map((domain) => {
-      if (domain.available) {
-        availableDomains.push(domain)
-      }
-    })
-    response.json(availableDomains)
+    response.json(domains)
   })
 })
 
@@ -218,5 +211,6 @@ module.exports = {
   getTrendingGoogleSearchDomains: getTrendingGoogleSearchDomains,
   getTrendingTwitterDomains: getTrendingTwitterDomains,
   sanitizeDomains: sanitizeDomains,
-  error: error
+  error: error,
+  firebase: firebaseDB
 }

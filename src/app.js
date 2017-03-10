@@ -1,4 +1,5 @@
 const $ = require('jquery')
+const moment = require('moment')
 
 const fetchUrls = endpoint => new Promise((resolve, reject) => {
   const request = new XMLHttpRequest()
@@ -31,7 +32,7 @@ const getGoogleDomains = () => new Promise((resolve, reject) => {
           googleDomains += `<div class="col-xs-12 content ${lastItem}">
                               <a href="${namecheapUrl}${domain.URL}" target="_blank" class="available">${domain.URL}</a><span class="hyphen"> - </span>
                               <a href="${googleSearchURL}${domain.searchTerm}" target="_blank" class="info">${domain.searchTerm}</a>
-                              <span class="available-as-of">as of ${domain.as_of}</span>
+                              <span class="available-as-of">as of ${moment(domain.as_of).format('MM/DD/YYYY h:mma')}</span>
                             </div>`
         }
       }
@@ -58,7 +59,7 @@ const getTwitterDomains = () => new Promise((resolve, reject) => {
           twitterDomains += `<div class="col-xs-12 content ${lastItem}">
                               <a href="${namecheapUrl}${domain.URL}" target="_blank" class="available">${domain.URL}</a><span class="hyphen"> - </span>
                               <a href="${twitterSearchURL}${domain.query}" target="_blank" class="info">${domain.searchTerm}</a>
-                              <span class="available-as-of">as of ${domain.as_of}</span>
+                              <span class="available-as-of">as of ${moment(domain.as_of).format('MM/DD/YYYY h:mma')}</span>
                             </div>`
         }
       }

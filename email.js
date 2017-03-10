@@ -1,71 +1,24 @@
+const path = require('path')
+const request = require("request")
+const _ = require('lodash')
+const moment = require('moment')
+const whois = require('whois-api')
+const twitterConfig = require('./data/twitter-config')
+const Twitter = require('twitter-node-client').Twitter
+
 const nodemailer = require('nodemailer')
 const schedule = require('node-schedule')
-const request = require("request")
-const moment = require('moment')
-const jsonfile = require('jsonfile')
 
-const filePath = './data/google-trending-domains.json'
-const tld = `com`
-
-// gets rid of spaces and unwanted characters
-const sanitizeDomains = (searchTerm) => {
-  let sanitized = `${searchTerm.toLowerCase().replace(/ /g, "").replace(/\./g, "")}.${tld}`
-  return sanitized
-}
-
-const getTrendingGoogleSearchDomains = () => new Promise((resolve, reject) => {
-  const googleTrendsURL = `http://hawttrends.appspot.com/api/terms/`
-  const domainArray = []
-  new Promise((resolve, reject) => {
-    request(googleTrendsURL, (err, res, body) => {
-      let data = JSON.parse(body)
-      if (data && data[1]) {
-        data[1].forEach((searchTerm, idx) => {
-          let sanitizedDomain = sanitizeDomains(searchTerm)
-          domainArray.push({
-            URL: sanitizedDomain,
-            searchTerm: searchTerm
-          })
-          if (idx === (data[1].length - 1)) {
-            resolve(domainArray)
-          }
-        })
-      }
-    })
-  })
-  .then(() => resolve(domainArray))
-  .catch(err => reject(err))
-})
-
-// Requests whether a URL has been taken from WhoAPI
-const getDomains = () => new Promise((resolve, reject) => {
-  const whoAPIKey = `b27983e0f59374a7c031a487727f93ae`
-  // for now we're just doing the 20 trending from Google
-  getTrendingGoogleSearchDomains().then(domains => {
-    const domainArray = []
-    new Promise((resolve, reject) => {
-      var counter = 0
-      domains.reverse().forEach((domain, idx) => {
-        const domainURL = `http://api.whoapi.com/?apikey=${whoAPIKey}&r=taken&domain=${domain.URL}`
-        request(domainURL, (err, res, body) => {
-            counter++
-            domain.asOf = moment().format('MM/DD/YYYY h:mma')
-            if (!JSON.parse(body).taken) {
-              domain.available = true
-            } else {
-              domain.available = false
-            }
-            domainArray.push(domain)
-            if (counter === domains.length) {
-              resolve(domainArray)
-            }
-        })
-      })
-    })
-    .then(() => resolve(domainArray))
-    .catch(err => reject(err))
-  })
-})
+let server = require('./server')
+const processDomains = server.processDomains
+const filterDomains = server.filterDomains
+const checkDomainAvailability = server.checkDomainAvailability
+const updateDatabase = server.updateDatabase
+const getTrendingGoogleSearchDomains = server.getTrendingGoogleSearchDomains
+const getTrendingTwitterDomains = server.getTrendingTwitterDomains
+const sanitizeDomains = server.sanitizeDomains
+const error = server.error
+const firebase = server.firebase
 
 // EMAIL SETTINGS //
 let transporter = nodemailer.createTransport({
@@ -76,29 +29,43 @@ let transporter = nodemailer.createTransport({
     }
 })
 
-const sendEmail = () => {
-  const domains = require(filePath)
+const sendEmail = (googleDomains, twitterDomains) => {
   let linkContainerStyle = `width:100%;padding-left:15px;font-size:15px;`
   let availableStyle = `color:#79ffb5;`
-  let unavailableStyle = `color:#c94646;`
   let domainLinks = ``
-  domains.forEach((domain, idx) => {
-    if (idx > 0) {
-      if (idx === domains.length - 1) {
-        linkContainerStyle += `margin-bottom:20px;`
-      }
-      if (domain.available) {
-        domainLinks += `<div style="${linkContainerStyle}">
-                          <a style="${availableStyle}" href=https://www.namecheap.com/domains/registration/results.aspx?domain=${domain.URL}>${domain.URL}</a>
-                        </div>`
-      }
-      // else {
-      //   domainLinks += `<div style="${linkContainerStyle}">
-      //                     <a style="${unavailableStyle}" href=https://www.namecheap.com/domains/registration/results.aspx?domain=${domain.URL}>${domain.URL}</a>
-      //                   </div>`
-      // }
+  let headerStyle = `padding-left:15px;`
+  googleDomains.forEach((domain, idx) => {
+    if (idx === 0) {
+      domainLinks += `<div><h3 style="${headerStyle}">Google domains</h3>`
+    }
+    // Only want to send links from the current day so it doesn't get super long
+    if (moment(domain.as_of).isSame(moment().format(), 'day')) {
+      domainLinks += `<div style="${linkContainerStyle}">
+                        <a style="${availableStyle}" href=https://www.namecheap.com/domains/registration/results.aspx?domain=${domain.URL}>${domain.URL}</a>
+                      </div>`
+    }
+    if (idx === googleDomains.length -1) {
+      domainLinks += `</div>`
     }
   })
+  twitterDomains.forEach((domain, idx) => {
+    if (idx === 0) {
+      domainLinks += `<div><h3 style="${headerStyle}">Twitter domains</h3>`
+    }
+    if (idx === twitterDomains.length - 1) {
+      linkContainerStyle += `margin-bottom:20px;`
+    }
+    // Only want to send links from the current day so it doesn't get super long
+    if (moment(domain.as_of).isSame(moment().format(), 'day')) {
+      domainLinks += `<div style="${linkContainerStyle}">
+                        <a style="${availableStyle}" href=https://www.namecheap.com/domains/registration/results.aspx?domain=${domain.URL}>${domain.URL}</a>
+                      </div>`
+    }
+    if (idx === twitterDomains.length -1) {
+      domainLinks += `</div>`
+    }
+  })
+
   // setup email data with unicode symbols
   let containerStyle = `width:100%;height:100%;background-color:#222;color:white;font-family:Arial;`
   let centeredTextStyle = `text-align:center;`
@@ -108,7 +75,7 @@ const sendEmail = () => {
                         Squatty Domains
                       </h1>
                       <h2 style="${centeredTextStyle} font-size: 20px;">
-                        ${moment().format('MMMM Do YYYY, h:mm a')}
+                        ${moment().format('MMMM Do YYYY')}
                       </h2>
                       <div>
                         ${domainLinks}
@@ -131,37 +98,49 @@ const sendEmail = () => {
 }
 
 const emailJob = () => {
-  getDomains().then(domains => {
-    setTimeout(() => {
-      sendEmail()
-    }, 1000)
+  let googleDomains = []
+  let twitterDomains = []
+  processDomains('google', firebase).then(domains => {
+    googleDomains.push(domains)
+    processDomains('twitter', firebase).then(domains => {
+      twitterDomains.push(domains)
+      sendEmail(googleDomains[0], twitterDomains[0])
+    })
   })
 }
 
+let rule = new schedule.RecurrenceRule()
+rule.hour = 19
+rule.minute = 47
+schedule.scheduleJob(`test`, rule, () => {
+  emailJob()
+})
+
+// Set up our email schedulers
 let rule1 = new schedule.RecurrenceRule()
 rule1.hour = 9
 rule1.minute = 0
 schedule.scheduleJob(`9am`, rule1, () => {
-  console.log('9 oclock')
+  emailJob()
 })
 
 let rule2 = new schedule.RecurrenceRule();
 rule2.hour = 12
 rule2.minute = 30
 schedule.scheduleJob(`12:30pm`, rule2, () => {
-  console.log('12:30 oclock')
+  emailJob()
 })
 
 let rule3 = new schedule.RecurrenceRule();
 rule3.hour = 16
 rule3.minute = 0
 schedule.scheduleJob(`4pm`, rule3, () => {
-  console.log('4 oclock')
+  emailJob()
 })
 
 let rule4 = new schedule.RecurrenceRule();
 rule4.hour = 19
 rule4.minute = 0
 schedule.scheduleJob(`7pm`, rule4, () => {
-  console.log('7 oclock')
+  emailJob()
 })
