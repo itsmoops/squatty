@@ -65,7 +65,7 @@ const getTwitterDomains = () => new Promise((resolve, reject) => {
   })
 })
 
-var user = localStorage.getItem('user')
+let user = localStorage.getItem('user')
 if (user) {
   $('.squatty-container').append(`<h1 id="response" style="text-align:center;text-align: center;font-size: 90px;margin-top:20%;">Welcome back ${user}!<h1>`)
   setTimeout(() => {
@@ -74,7 +74,7 @@ if (user) {
     .then(() => {  getTwitterDomains() })
   }, 2000)
 } else {
-  var resp = prompt(`Hey, who are you?`)
+  let resp = prompt(`Hey, who are you?`)
   let respFormat = resp.charAt(0).toUpperCase() + resp.slice(1).toLowerCase()
   if (resp.toLowerCase() === `eric` || resp.toLowerCase() === `karl`) {
     localStorage.setItem('user', respFormat)
