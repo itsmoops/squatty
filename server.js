@@ -37,7 +37,7 @@ app.listen(app.get('port'), () => {
 // gets rid of spaces and unwanted characters
 const sanitizeDomains = (searchTerm) => {
   const tld = `com`
-  let sanitized = `${searchTerm.toLowerCase().replace(/ /g, "").replace(/\./g, "").replace(/\#/g, "").replace(/\_/g, "").replace(/\"/g, "").replace(/\'/g, "")}.${tld}`
+  let sanitized = `${searchTerm.toLowerCase().replace(/ /g, "").replace(/\./g, "").replace(/\#/g, "").replace(/\_/g, "").replace(/\"/g, "").replace(/\'/g, "").replace(/\&/g, "and")}.${tld}`
   return sanitized
 }
 

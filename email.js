@@ -111,7 +111,7 @@ const emailJob = () => {
 
 let rule = new schedule.RecurrenceRule()
 rule.hour = 19
-rule.minute = 51
+rule.minute = 55
 schedule.scheduleJob(`test`, rule, () => {
   emailJob()
 })
