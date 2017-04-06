@@ -124,31 +124,10 @@ const emailJob = () => {
   })
 }
 
-// Set up our email schedulers
+// Set up our email scheduler
 let rule1 = new schedule.RecurrenceRule()
-rule1.hour = 9
-rule1.minute = 0
-schedule.scheduleJob(`9am`, rule1, () => {
-  emailJob()
-})
-
-let rule2 = new schedule.RecurrenceRule();
-rule2.hour = 12
-rule2.minute = 30
-schedule.scheduleJob(`12:30pm`, rule2, () => {
-  emailJob()
-})
-
-let rule3 = new schedule.RecurrenceRule();
-rule3.hour = 16
-rule3.minute = 0
-schedule.scheduleJob(`4pm`, rule3, () => {
-  emailJob()
-})
-
-let rule4 = new schedule.RecurrenceRule();
-rule4.hour = 19
-rule4.minute = 0
-schedule.scheduleJob(`7pm`, rule4, () => {
+rule1.hour = 11
+rule1.minute = 30
+schedule.scheduleJob(`11:30am`, rule1, () => {
   emailJob()
 })
