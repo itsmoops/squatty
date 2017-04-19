@@ -29,23 +29,27 @@ let transporter = nodemailer.createTransport({
     }
 })
 
-const sendEmail = (googleDomains, twitterDomains) => {
+const sendEmail = (googleDomains, twitterDomains, allRecipients) => {
   let linkContainerStyle = `width:100%;padding-left:15px;font-size:15px;padding-bottom:2px;`
-  let availableStyle = `color:#79ffb5;text-decoration:none;`
-  let unavailableStyle = `color:#ff7896`
+  let availableStyle = `color:#79ffb5 !important;text-decoration:none;`
+  let infoStyle = `color:#fff !important;text-decoration:none;`
   let domainLinks = ``
   let headerStyle = `padding-left:15px;text-decoration:none !important;`
   let googleCount = 0
   let twitterCount = 0
+  let ericMail = `moore.ericc@gmail.com`
+  let karlMail = allRecipients ? `,karl.schwende@gmail.com` : ``
+
   googleDomains.forEach((domain, idx) => {
     if (idx === 0) {
-      domainLinks += `<div><h3 style="${headerStyle}">Google domains</h3>`
+      domainLinks += `<div><h2 style="${headerStyle}">Google Domains</h2>`
     }
     // Only want to send links from the current day so it doesn't get super long
     if (moment(domain.as_of).isSame(moment().format(), 'day')) {
       googleCount++
       domainLinks += `<div style="${linkContainerStyle}">
-                        <a style="${availableStyle}" href=https://www.namecheap.com/domains/registration/results.aspx?domain=${domain.URL}>${domain.URL}</a>
+                        <a style="${availableStyle}" href="https://www.namecheap.com/domains/registration/results.aspx?domain=${domain.URL}">${domain.URL}</a><br/>
+                        <a style="${infoStyle}" href="https://www.google.com/#safe=strict&q=${domain.searchTerm}">${domain.searchTerm}</a><br/><br/>
                       </div>`
     } else if ((idx === googleDomains.length - 1) && googleCount === 0) {
       domainLinks += `<div style="${linkContainerStyle}">
@@ -58,7 +62,7 @@ const sendEmail = (googleDomains, twitterDomains) => {
   })
   twitterDomains.forEach((domain, idx) => {
     if (idx === 0) {
-      domainLinks += `<div><h3 style="${headerStyle}">Twitter domains</h3>`
+      domainLinks += `<div><h2 style="${headerStyle}">Twitter Domains</h2>`
     }
     if (idx === twitterDomains.length - 1) {
       linkContainerStyle += `margin-bottom:20px;`
@@ -67,7 +71,8 @@ const sendEmail = (googleDomains, twitterDomains) => {
     if (moment(domain.as_of).isSame(moment().format(), 'day')) {
       twitterCount++
       domainLinks += `<div style="${linkContainerStyle}">
-                        <a style="${availableStyle}" href=https://www.namecheap.com/domains/registration/results.aspx?domain=${domain.URL}>${domain.URL}</a>
+                        <a style="${availableStyle}" href="https://www.namecheap.com/domains/registration/results.aspx?domain=${domain.URL}">${domain.URL}</a><br/>
+                        <a style="${infoStyle}" href="http://twitter.com/search?q=${domain.query}">${domain.searchTerm}</a><br/><br/>
                       </div>`
     } else if ((idx === twitterDomains.length - 1) && twitterCount === 0) {
       domainLinks += `<div style="${linkContainerStyle}">
@@ -99,7 +104,7 @@ const sendEmail = (googleDomains, twitterDomains) => {
                   </html>`
   let mailOptions = {
       from: `"Squatty Domains" <squattydomains@gmail.com>`, // sender address
-      to: `moore.ericc@gmail.com, karl.schwende@gmail.com`, // list of receivers, comma separate to add more
+      to: `${ericMail}${karlMail}`, // list of receivers, comma separate to add more
       subject: `Trending Domains`, // Subject line
       html: mailBody // html body
   }
@@ -112,14 +117,14 @@ const sendEmail = (googleDomains, twitterDomains) => {
   });
 }
 
-const emailJob = () => {
+const emailJob = (allRecipients) => {
   let googleDomains = []
   let twitterDomains = []
   processDomains('google', firebase).then(domains => {
     googleDomains.push(domains)
     processDomains('twitter', firebase).then(domains => {
       twitterDomains.push(domains)
-      sendEmail(googleDomains[0], twitterDomains[0])
+      sendEmail(googleDomains[0], twitterDomains[0], allRecipients)
     })
   })
 }
@@ -129,5 +134,6 @@ let rule1 = new schedule.RecurrenceRule()
 rule1.hour = 11
 rule1.minute = 30
 schedule.scheduleJob(`11:30am`, rule1, () => {
-  emailJob()
+  // true includes Karl
+  emailJob(true)
 })
